@@ -1,5 +1,5 @@
-"""
-Clinical Evidence Intelligence (RAG) — RenalCare OS
+﻿"""
+Clinical Evidence Intelligence (RAG) â€” RenalCare AI
 Retrieval-Augmented Generation for nephrology literature.
 Falls back gracefully when optional deps (FAISS, sentence-transformers) are unavailable.
 """
@@ -42,19 +42,19 @@ BUILT_IN_KNOWLEDGE = [
         "id": "kdigo_2024_ckd_def",
         "title": "KDIGO 2024 CKD Definition",
         "source": "KDIGO Clinical Practice Guidelines",
-        "text": "Chronic Kidney Disease (CKD) is defined as abnormalities of kidney structure or function, present for more than 3 months. CKD is classified based on cause, GFR category (G1-G5), and albuminuria category (A1-A3). eGFR <60 mL/min/1.73m² or markers of kidney damage for >3 months confirms CKD regardless of cause.",
+        "text": "Chronic Kidney Disease (CKD) is defined as abnormalities of kidney structure or function, present for more than 3 months. CKD is classified based on cause, GFR category (G1-G5), and albuminuria category (A1-A3). eGFR <60 mL/min/1.73mÂ² or markers of kidney damage for >3 months confirms CKD regardless of cause.",
     },
     {
         "id": "kdigo_bp_target",
         "title": "Blood Pressure Targets in CKD",
         "source": "KDIGO 2021 Blood Pressure Guideline",
-        "text": "KDIGO 2021 recommends a target systolic BP of <120 mmHg (standardised office measurement) for CKD patients. RAAS inhibitors (ACEi or ARB) are recommended for CKD patients with diabetes and albuminuria ≥30 mg/g, or for CKD patients without diabetes with albuminuria ≥300 mg/g.",
+        "text": "KDIGO 2021 recommends a target systolic BP of <120 mmHg (standardised office measurement) for CKD patients. RAAS inhibitors (ACEi or ARB) are recommended for CKD patients with diabetes and albuminuria â‰¥30 mg/g, or for CKD patients without diabetes with albuminuria â‰¥300 mg/g.",
     },
     {
         "id": "sglt2_ckd",
         "title": "SGLT2 Inhibitors in CKD",
         "source": "CREDENCE, DAPA-CKD, EMPA-KIDNEY Trials",
-        "text": "SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) have demonstrated significant cardiorenal protection in CKD. DAPA-CKD trial showed 39% reduction in composite of ≥50% eGFR decline or ESRD or death from kidney/CV causes with dapagliflozin. KDIGO 2022 recommends SGLT2i for CKD patients with T2DM and eGFR ≥20.",
+        "text": "SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) have demonstrated significant cardiorenal protection in CKD. DAPA-CKD trial showed 39% reduction in composite of â‰¥50% eGFR decline or ESRD or death from kidney/CV causes with dapagliflozin. KDIGO 2022 recommends SGLT2i for CKD patients with T2DM and eGFR â‰¥20.",
     },
     {
         "id": "raas_inhibition",
@@ -72,7 +72,7 @@ BUILT_IN_KNOWLEDGE = [
         "id": "metformin_ckd",
         "title": "Metformin in CKD",
         "source": "FDA Guidelines & KDIGO 2022",
-        "text": "Metformin use in CKD: Continue in eGFR ≥45; use with caution and at reduced dose in eGFR 30-44; contraindicated in eGFR <30 due to risk of lactic acidosis. Metformin should be temporarily withheld before iodinated contrast procedures in CKD patients. Reassess after 48 hours following contrast if renal function stable.",
+        "text": "Metformin use in CKD: Continue in eGFR â‰¥45; use with caution and at reduced dose in eGFR 30-44; contraindicated in eGFR <30 due to risk of lactic acidosis. Metformin should be temporarily withheld before iodinated contrast procedures in CKD patients. Reassess after 48 hours following contrast if renal function stable.",
     },
     {
         "id": "nsaid_ckd",
@@ -100,21 +100,21 @@ BUILT_IN_KNOWLEDGE = [
     },
     {
         "id": "economic_burden_india",
-        "title": "Economic Burden of Hemodialysis — India",
-        "source": "Published Research — South India Pharmacoeconomic Study",
+        "title": "Economic Burden of Hemodialysis â€” India",
+        "source": "Published Research â€” South India Pharmacoeconomic Study",
         "text": "Maintenance hemodialysis creates significant economic burden for patients in rural India. Direct medical costs (dialysis, medications, labs) combined with indirect costs (caregiver time, wage loss, transportation) frequently exceed household income. Studies in South India document catastrophic health expenditure in >60% of hemodialysis patients. Government schemes (PMJAY, Aarogyasri) provide partial coverage but gaps remain significant. Quality of life, measured using KDQoL-SF, is markedly impaired across physical, emotional, and social domains.",
     },
     {
         "id": "ckd_dm_management",
         "title": "Diabetes Management in CKD",
         "source": "ADA Standards of Care 2024 / KDIGO Diabetes-CKD 2022",
-        "text": "Target HbA1c ~7% in most CKD patients with diabetes; individualise targets (7-8%) for those with hypoglycaemia risk, limited life expectancy, or advanced CKD. SGLT2 inhibitors are preferred add-on therapy when eGFR ≥20. GLP-1 receptor agonists (semaglutide, liraglutide) provide cardiorenal benefits and are preferred second agents. Sulfonylureas have increased hypoglycaemia risk in CKD. Insulin doses may need reduction as GFR declines.",
+        "text": "Target HbA1c ~7% in most CKD patients with diabetes; individualise targets (7-8%) for those with hypoglycaemia risk, limited life expectancy, or advanced CKD. SGLT2 inhibitors are preferred add-on therapy when eGFR â‰¥20. GLP-1 receptor agonists (semaglutide, liraglutide) provide cardiorenal benefits and are preferred second agents. Sulfonylureas have increased hypoglycaemia risk in CKD. Insulin doses may need reduction as GFR declines.",
     },
     {
         "id": "potassium_management_ckd",
         "title": "Hyperkalaemia in CKD",
         "source": "KDIGO 2023 Potassium Management",
-        "text": "Hyperkalaemia (serum K+ >5.5 mEq/L) is common in CKD, especially with RAAS inhibitor use. Management includes: dietary potassium restriction (<2000-3000 mg/day based on stage), dietary counselling, novel potassium binders (patiromer, sodium zirconium cyclosilicate), loop diuretics. Avoid ACEi/ARB dose reduction/discontinuation if possible — use potassium binders to maintain RAAS therapy. Emergent hyperkalaemia (K+ >6.5 or ECG changes) requires immediate treatment.",
+        "text": "Hyperkalaemia (serum K+ >5.5 mEq/L) is common in CKD, especially with RAAS inhibitor use. Management includes: dietary potassium restriction (<2000-3000 mg/day based on stage), dietary counselling, novel potassium binders (patiromer, sodium zirconium cyclosilicate), loop diuretics. Avoid ACEi/ARB dose reduction/discontinuation if possible â€” use potassium binders to maintain RAAS therapy. Emergent hyperkalaemia (K+ >6.5 or ECG changes) requires immediate treatment.",
     },
 ]
 
@@ -210,7 +210,7 @@ class ClinicalRAGEngine:
         return scored[:top_k]
 
     def answer_query(self, query: str) -> dict:
-        """Full RAG pipeline: retrieve → generate answer."""
+        """Full RAG pipeline: retrieve â†’ generate answer."""
         retrieved = self.search(query, top_k=4)
         context = "\n\n".join(
             f"[{i+1}] **{r['title']}** ({r['source']})\n{r['text']}"
@@ -225,16 +225,16 @@ Retrieved Evidence Context:
 {context}
 
 Based on the evidence above, provide:
-1. **Evidence Summary** — 2-3 sentence direct answer to the clinical question
-2. **Key Findings** — 3-4 bullet points of key clinical points
-3. **Monitoring Considerations** — what should be monitored in this clinical context
-4. **Clinical Considerations** — important caveats or clinical pearls
+1. **Evidence Summary** â€” 2-3 sentence direct answer to the clinical question
+2. **Key Findings** â€” 3-4 bullet points of key clinical points
+3. **Monitoring Considerations** â€” what should be monitored in this clinical context
+4. **Clinical Considerations** â€” important caveats or clinical pearls
 
 Use clinical language appropriate for nephrology professionals.
 Always ground your answer in the provided evidence. Cite source numbers [1], [2] etc.
 
 End with this exact disclaimer:
-"⚕️ *This system provides evidence-based insights and does not replace clinical judgment. Always consult current clinical guidelines and specialist opinion.*" """
+"âš•ï¸ *This system provides evidence-based insights and does not replace clinical judgment. Always consult current clinical guidelines and specialist opinion.*" """
 
         system = (
             "You are a board-certified clinical pharmacist and nephrology specialist AI. "
@@ -298,13 +298,13 @@ def _fallback_answer(query: str, sources: list[dict]) -> str:
         return (
             "No relevant evidence found in the knowledge base for this query. "
             "Please upload relevant clinical guidelines or research papers.\n\n"
-            "⚕️ *This system provides evidence-based insights and does not replace clinical judgment.*"
+            "âš•ï¸ *This system provides evidence-based insights and does not replace clinical judgment.*"
         )
     answer = "**Evidence Summary**\n\n"
     answer += "Based on the retrieved clinical evidence:\n\n"
     for i, s in enumerate(sources[:3], 1):
         answer += f"**[{i}] {s['title']}** ({s['source']})\n{s['text'][:300]}...\n\n"
-    answer += "\n⚕️ *This system provides evidence-based insights and does not replace clinical judgment.*"
+    answer += "\nâš•ï¸ *This system provides evidence-based insights and does not replace clinical judgment.*"
     return answer
 
 

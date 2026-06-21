@@ -1,4 +1,4 @@
-"""Clinical Evidence Intelligence Page — RenalCare OS."""
+﻿"""Clinical Evidence Intelligence Page â€” RenalCare AI."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -23,16 +23,16 @@ def render():
     st.markdown("""
     <div style='background: linear-gradient(135deg, #0d5c4a, #16a085);
                 border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>🔬 Clinical Evidence Intelligence</h2>
+        <h2 style='color:white; margin:0; font-size:1.5rem;'>ðŸ”¬ Clinical Evidence Intelligence</h2>
         <p style='color:#a7f3d0; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            RAG-powered nephrology knowledge base · KDIGO Guidelines · Research Evidence
+            RAG-powered nephrology knowledge base Â· KDIGO Guidelines Â· Research Evidence
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class='info-box'>
-        <b>⚕️ Disclaimer:</b> This system provides evidence-based insights and does not replace clinical judgment.
+        <b>âš•ï¸ Disclaimer:</b> This system provides evidence-based insights and does not replace clinical judgment.
         All clinical decisions must be made by qualified healthcare professionals.
     </div>
     """, unsafe_allow_html=True)
@@ -43,7 +43,7 @@ def render():
     left, right = st.columns([1.6, 1])
 
     with right:
-        st.markdown("### 📚 Knowledge Base")
+        st.markdown("### ðŸ“š Knowledge Base")
         st.markdown(f"""
         <div style='background:white; border-radius:10px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
             <div style='display:flex; justify-content:space-between; margin-bottom:0.8rem;'>
@@ -64,7 +64,7 @@ def render():
 
         # PDF upload
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📄 Upload Research Papers")
+        st.markdown("### ðŸ“„ Upload Research Papers")
         uploaded = st.file_uploader(
             "Upload PDF (clinical guidelines, research papers)",
             type=["pdf"],
@@ -74,27 +74,27 @@ def render():
             with st.spinner("Processing PDF..."):
                 n = rag.add_pdf(uploaded.read(), uploaded.name)
             if n > 0:
-                st.success(f"✅ Added {n} text segments from '{uploaded.name}'")
+                st.success(f"âœ… Added {n} text segments from '{uploaded.name}'")
             else:
                 st.warning("Could not extract text. Ensure PDF contains selectable text.")
 
         if rag.has_uploaded_documents():
             st.markdown("""
             <div style='background:#d5f5e3; border-radius:8px; padding:0.5rem 0.8rem; font-size:0.8rem; color:#1e8449;'>
-                📂 Custom documents loaded into knowledge base
+                ðŸ“‚ Custom documents loaded into knowledge base
             </div>
             """, unsafe_allow_html=True)
 
         # Example questions
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 💡 Example Questions")
+        st.markdown("### ðŸ’¡ Example Questions")
         for q in EXAMPLE_QUESTIONS[:5]:
             if st.button(q, key=f"eg_{q[:20]}", use_container_width=True):
                 st.session_state["rag_query"] = q
                 st.rerun()
 
     with left:
-        st.markdown("### 🔍 Ask a Clinical Question")
+        st.markdown("### ðŸ” Ask a Clinical Question")
 
         query = st.text_area(
             "Enter your clinical question",
@@ -108,7 +108,7 @@ def render():
 
         col_btn1, col_btn2 = st.columns([1, 4])
         with col_btn1:
-            search_clicked = st.button("🔍 Search", type="primary", use_container_width=True)
+            search_clicked = st.button("ðŸ” Search", type="primary", use_container_width=True)
 
         if search_clicked and query.strip():
             with st.spinner("Retrieving clinical evidence..."):
@@ -116,14 +116,14 @@ def render():
 
             st.session_state["evidence_result"] = result
             st.markdown("---")
-            st.markdown("### 📋 Evidence Summary")
+            st.markdown("### ðŸ“‹ Evidence Summary")
 
             # Source cards
             sources = result.get("sources", [])
             if sources:
-                st.markdown(f"<div style='font-size:0.8rem; color:#718096; margin-bottom:0.5rem;'>📚 Retrieved {len(sources)} relevant source(s) {'using semantic search' if result.get('vector_search_used') else 'using keyword matching'}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:0.8rem; color:#718096; margin-bottom:0.5rem;'>ðŸ“š Retrieved {len(sources)} relevant source(s) {'using semantic search' if result.get('vector_search_used') else 'using keyword matching'}</div>", unsafe_allow_html=True)
                 for i, src in enumerate(sources, 1):
-                    with st.expander(f"[{i}] {src.get('title', 'Source')} — {src.get('source', '')}"):
+                    with st.expander(f"[{i}] {src.get('title', 'Source')} â€” {src.get('source', '')}"):
                         st.markdown(f"<div style='font-size:0.85rem; color:#4a5568; line-height:1.6;'>{src['text']}</div>", unsafe_allow_html=True)
 
             # AI answer
@@ -145,7 +145,7 @@ def render():
             st.markdown("""
             <div style='background:white; border-radius:12px; padding:2rem; text-align:center;
                         box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-top:1rem;'>
-                <div style='font-size:2.5rem; margin-bottom:0.8rem;'>🔬</div>
+                <div style='font-size:2.5rem; margin-bottom:0.8rem;'>ðŸ”¬</div>
                 <h4 style='color:#1e3a5f;'>Nephrology Evidence Engine</h4>
                 <p style='color:#718096; font-size:0.88rem; line-height:1.6;'>
                     Ask any clinical question about CKD management, medications, nutrition,

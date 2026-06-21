@@ -1,5 +1,5 @@
-"""
-Kidney Risk Assessment Model — RenalCare OS
+﻿"""
+Kidney Risk Assessment Model â€” RenalCare AI
 Uses rule-based clinical scoring validated against KDIGO guidelines
 with optional ML overlay if scikit-learn is available.
 """
@@ -21,7 +21,7 @@ class RiskInput:
     alcohol: bool
     family_history: bool
     serum_creatinine: float   # mg/dL
-    egfr: float               # mL/min/1.73m²
+    egfr: float               # mL/min/1.73mÂ²
     albuminuria: str          # "None" / "Microalbuminuria" / "Macroalbuminuria"
     hba1c: Optional[float] = None  # %
     systolic_bp: Optional[float] = None
@@ -64,7 +64,7 @@ def _score_albuminuria(level: str) -> float:
 
 
 def calculate_risk(inp: RiskInput) -> RiskResult:
-    """Main scoring function — clinical rule-based with weighted factors."""
+    """Main scoring function â€” clinical rule-based with weighted factors."""
     score = 0.0
     factors = []
 
@@ -75,7 +75,7 @@ def calculate_risk(inp: RiskInput) -> RiskResult:
         severity = "Moderate" if egfr_pts < 40 else "High" if egfr_pts < 70 else "Critical"
         factors.append({
             "factor": "eGFR / Kidney Function",
-            "value": f"{inp.egfr:.1f} mL/min/1.73m²",
+            "value": f"{inp.egfr:.1f} mL/min/1.73mÂ²",
             "impact": severity,
             "detail": f"Current kidney function: {egfr_cat}",
         })
@@ -99,7 +99,7 @@ def calculate_risk(inp: RiskInput) -> RiskResult:
         if inp.hba1c and inp.hba1c > 7.0:
             pts_extra = min((inp.hba1c - 7.0) * 2, 8)
             score += pts_extra
-            detail += f" (HbA1c {inp.hba1c}% — suboptimal glycaemic control)"
+            detail += f" (HbA1c {inp.hba1c}% â€” suboptimal glycaemic control)"
         factors.append({
             "factor": "Diabetes Mellitus",
             "value": f"HbA1c {inp.hba1c}%" if inp.hba1c else "Present",
@@ -114,7 +114,7 @@ def calculate_risk(inp: RiskInput) -> RiskResult:
         detail = "Hypertension accelerates CKD progression"
         if inp.systolic_bp and inp.systolic_bp > 140:
             score += 5
-            detail += f" (BP {inp.systolic_bp}/{inp.diastolic_bp or '?'} mmHg — above target)"
+            detail += f" (BP {inp.systolic_bp}/{inp.diastolic_bp or '?'} mmHg â€” above target)"
         factors.append({
             "factor": "Hypertension",
             "value": f"{inp.systolic_bp}/{inp.diastolic_bp} mmHg" if inp.systolic_bp else "Present",
@@ -129,7 +129,7 @@ def calculate_risk(inp: RiskInput) -> RiskResult:
             "factor": "Age",
             "value": f"{inp.age:.0f} years",
             "impact": "Moderate",
-            "detail": "Age ≥65 is an independent CKD risk factor",
+            "detail": "Age â‰¥65 is an independent CKD risk factor",
         })
     elif inp.age >= 50:
         score += 4
@@ -175,7 +175,7 @@ def calculate_risk(inp: RiskInput) -> RiskResult:
             "factor": "Elevated Serum Creatinine",
             "value": f"{inp.serum_creatinine:.2f} mg/dL",
             "impact": "High",
-            "detail": "Above normal range — reflects reduced GFR",
+            "detail": "Above normal range â€” reflects reduced GFR",
         })
 
     # --- Alcohol ---
@@ -270,7 +270,7 @@ def _generate_clinical_summary(inp: RiskInput, score: float, category: str,
     return (
         f"This {age_str} {gender_str} patient presents with a kidney risk score of {score:.1f}/100, "
         f"classified as {category} risk. Current kidney function is categorised as {stage} "
-        f"(eGFR: {inp.egfr:.1f} mL/min/1.73m²) with {inp.albuminuria.lower()} on urine testing. "
+        f"(eGFR: {inp.egfr:.1f} mL/min/1.73mÂ²) with {inp.albuminuria.lower()} on urine testing. "
         f"Key comorbidities include {comorbid_str}. "
         f"Clinical assessment suggests {'urgent nephrology referral is warranted' if score >= 75 else 'proactive monitoring and risk factor modification are recommended'}."
     )

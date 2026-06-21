@@ -1,7 +1,7 @@
-@echo off
+﻿@echo off
 echo.
 echo  ====================================================
-echo   RenalCare OS - Installing Dependencies
+echo   RenalCare AI - Installing Dependencies
 echo  ====================================================
 echo.
 pip install streamlit plotly pandas numpy scikit-learn reportlab python-dotenv

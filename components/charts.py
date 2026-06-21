@@ -1,4 +1,4 @@
-"""Shared Plotly chart components for RenalCare OS."""
+﻿"""Shared Plotly chart components for RenalCare AI."""
 import plotly.graph_objects as go
 import plotly.express as px
 
@@ -88,7 +88,7 @@ def cost_donut(categories: list[str], values: list[float], title: str = "Cost Br
         marker=dict(colors=COLORS[:len(categories)], line=dict(color="white", width=2)),
         textinfo="label+percent",
         textfont={"size": 10},
-        hovertemplate="<b>%{label}</b><br>₹%{value:,.0f}<br>%{percent}<extra></extra>",
+        hovertemplate="<b>%{label}</b><br>â‚¹%{value:,.0f}<br>%{percent}<extra></extra>",
     ))
     fig.update_layout(
         title=dict(text=title, font=dict(size=13, color="#1e3a5f")),
@@ -168,7 +168,7 @@ def egfr_trend_placeholder() -> go.Figure:
 
     fig.update_layout(
         title=dict(text="eGFR Trend (Sample)", font=dict(size=12, color="#1e3a5f")),
-        xaxis_title="Month", yaxis_title="eGFR (mL/min/1.73m²)",
+        xaxis_title="Month", yaxis_title="eGFR (mL/min/1.73mÂ²)",
         height=250, margin=dict(l=40, r=20, t=45, b=40),
         paper_bgcolor="white", plot_bgcolor="white",
         font={"family": "Inter, sans-serif"},

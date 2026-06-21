@@ -1,4 +1,4 @@
-"""Dashboard Home Page — RenalCare OS."""
+﻿"""Dashboard Home Page â€” RenalCare AI."""
 import streamlit as st
 import sys
 from pathlib import Path
@@ -10,9 +10,9 @@ def render():
     st.markdown("""
     <div style='background: linear-gradient(135deg, #1e3a5f 0%, #2980b9 60%, #16a085 100%);
                 border-radius: 16px; padding: 2.5rem 2rem; margin-bottom: 1.5rem; text-align: center;'>
-        <div style='font-size: 3rem; margin-bottom: 0.5rem;'>🫀</div>
+        <div style='font-size: 3rem; margin-bottom: 0.5rem;'>ðŸ«€</div>
         <h1 style='color: white; font-size: 2.2rem; font-weight: 700; margin: 0; letter-spacing: -0.02em;'>
-            RenalCare OS
+            RenalCare AI
         </h1>
         <p style='color: #bde0fe; font-size: 1.05rem; margin: 0.5rem 0 1rem 0;'>
             AI-Powered Kidney Disease Intelligence Platform
@@ -20,23 +20,23 @@ def render():
         <div style='display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;'>
             <span style='background: rgba(255,255,255,0.15); color: white; padding: 4px 14px;
                          border-radius: 20px; font-size: 0.8rem; font-weight: 500;'>
-                🧬 Clinical Pharmacy AI
+                ðŸ§¬ Clinical Pharmacy AI
             </span>
             <span style='background: rgba(255,255,255,0.15); color: white; padding: 4px 14px;
                          border-radius: 20px; font-size: 0.8rem; font-weight: 500;'>
-                🔬 Evidence Intelligence
+                ðŸ”¬ Evidence Intelligence
             </span>
             <span style='background: rgba(255,255,255,0.15); color: white; padding: 4px 14px;
                          border-radius: 20px; font-size: 0.8rem; font-weight: 500;'>
-                💊 Medication Safety
+                ðŸ’Š Medication Safety
             </span>
             <span style='background: rgba(255,255,255,0.15); color: white; padding: 4px 14px;
                          border-radius: 20px; font-size: 0.8rem; font-weight: 500;'>
-                🥗 Renal Nutrition
+                ðŸ¥— Renal Nutrition
             </span>
             <span style='background: rgba(255,255,255,0.15); color: white; padding: 4px 14px;
                          border-radius: 20px; font-size: 0.8rem; font-weight: 500;'>
-                💰 Pharmacoeconomics
+                ðŸ’° Pharmacoeconomics
             </span>
         </div>
     </div>
@@ -45,8 +45,8 @@ def render():
     # Mission statement
     st.markdown("""
     <div class='info-box'>
-        <b>🎯 Mission:</b> Transform kidney disease management from reactive treatment to predictive,
-        preventive, and personalised care through AI — supporting clinicians, pharmacists, and researchers,
+        <b>ðŸŽ¯ Mission:</b> Transform kidney disease management from reactive treatment to predictive,
+        preventive, and personalised care through AI â€” supporting clinicians, pharmacists, and researchers,
         not replacing them.
     </div>
     """, unsafe_allow_html=True)
@@ -54,21 +54,21 @@ def render():
     st.markdown("---")
 
     # Platform modules
-    st.markdown("### 🏥 Platform Modules — Version 1")
+    st.markdown("### ðŸ¥ Platform Modules â€” Version 1")
     st.markdown("<br>", unsafe_allow_html=True)
 
     modules = [
         {
-            "icon": "🫀",
+            "icon": "ðŸ«€",
             "title": "Kidney Risk Assessment",
-            "desc": "AI-powered CKD risk scoring using clinical biomarkers, demographics, and comorbidities. Generates a 0–100 Kidney Health Score with risk classification.",
+            "desc": "AI-powered CKD risk scoring using clinical biomarkers, demographics, and comorbidities. Generates a 0â€“100 Kidney Health Score with risk classification.",
             "tags": ["Risk Score", "eGFR Analysis", "KDIGO Guidelines"],
             "color": "#2980b9",
             "page": "Risk",
             "status": "active",
         },
         {
-            "icon": "🔬",
+            "icon": "ðŸ”¬",
             "title": "Clinical Evidence Intelligence",
             "desc": "RAG-powered clinical Q&A engine with built-in KDIGO guidelines knowledge base. Upload research papers for instant evidence retrieval.",
             "tags": ["RAG", "KDIGO", "PubMed"],
@@ -77,7 +77,7 @@ def render():
             "status": "active",
         },
         {
-            "icon": "💊",
+            "icon": "ðŸ’Š",
             "title": "Medication Intelligence",
             "desc": "Signature PharmD AI module. Drug interaction screening, nephrotoxicity alerts, renal dose adjustment review, and ADR risk assessment.",
             "tags": ["Drug Safety", "PharmD", "Nephrotoxicity"],
@@ -86,7 +86,7 @@ def render():
             "status": "active",
         },
         {
-            "icon": "🥗",
+            "icon": "ðŸ¥—",
             "title": "Kidney Nutrition Intelligence",
             "desc": "Personalised renal nutrition assistant. Analyse food suitability based on CKD stage with potassium, sodium, phosphorus, and protein guidance.",
             "tags": ["Renal Diet", "Nutrient Analysis", "CKD Stage"],
@@ -95,7 +95,7 @@ def render():
             "status": "active",
         },
         {
-            "icon": "💰",
+            "icon": "ðŸ’°",
             "title": "Pharmacoeconomic Intelligence",
             "desc": "Economic burden calculator based on published hemodialysis research. Estimates direct, indirect, and total annual costs with catastrophic expenditure analysis.",
             "tags": ["Cost Analysis", "Caregiver Burden", "Financial Risk"],
@@ -104,7 +104,7 @@ def render():
             "status": "active",
         },
         {
-            "icon": "📋",
+            "icon": "ðŸ“‹",
             "title": "AI Renal Report Generator",
             "desc": "Generate comprehensive, professional PDF clinical reports combining risk analysis, medication review, nutrition assessment, and economic burden data.",
             "tags": ["PDF Export", "Clinical Report", "Patient Summary"],
@@ -133,7 +133,7 @@ def render():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"Open {mod['title'].split()[0]} →", key=f"open_{mod['page']}", use_container_width=True):
+            if st.button(f"Open {mod['title'].split()[0]} â†’", key=f"open_{mod['page']}", use_container_width=True):
                 st.session_state.current_page = mod["page"]
                 st.rerun()
 
@@ -142,51 +142,51 @@ def render():
     # Future roadmap
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.markdown("### 🗺️ Version Roadmap")
+        st.markdown("### ðŸ—ºï¸ Version Roadmap")
         st.markdown("""
         <div style='background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);'>
             <div style='margin-bottom: 0.8rem;'>
                 <span style='background:#d5f5e3; color:#1e8449; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;'>
-                    ✅ VERSION 1 — LIVE
+                    âœ… VERSION 1 â€” LIVE
                 </span>
                 <div style='font-size:0.82rem; color:#4a5568; margin-top:0.4rem; line-height:1.8;'>
-                    Kidney Risk · Clinical Evidence · Medication Intelligence<br>
-                    Nutrition Intelligence · Pharmacoeconomics · Report Generator
+                    Kidney Risk Â· Clinical Evidence Â· Medication Intelligence<br>
+                    Nutrition Intelligence Â· Pharmacoeconomics Â· Report Generator
                 </div>
             </div>
             <hr style='border-color:#f0f0f0;'>
             <div style='margin-bottom: 0.8rem;'>
                 <span style='background:#fef9e7; color:#d35400; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;'>
-                    🔮 VERSION 2 — PLANNED
+                    ðŸ”® VERSION 2 â€” PLANNED
                 </span>
                 <div style='font-size:0.82rem; color:#4a5568; margin-top:0.4rem; line-height:1.8;'>
-                    CKD Progression Prediction · Adherence Intelligence<br>
-                    Dialysis Intelligence · Research-Grade Models
+                    CKD Progression Prediction Â· Adherence Intelligence<br>
+                    Dialysis Intelligence Â· Research-Grade Models
                 </div>
             </div>
             <hr style='border-color:#f0f0f0;'>
             <div>
                 <span style='background:#f3e8ff; color:#6b21a8; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;'>
-                    🚀 VERSION 3 — FUTURE
+                    ðŸš€ VERSION 3 â€” FUTURE
                 </span>
                 <div style='font-size:0.82rem; color:#4a5568; margin-top:0.4rem; line-height:1.8;'>
-                    Kidney Digital Twin · Population Health Intelligence<br>
-                    Hospital Integration · FHIR/EHR Connectivity
+                    Kidney Digital Twin Â· Population Health Intelligence<br>
+                    Hospital Integration Â· FHIR/EHR Connectivity
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown("### ⚕️ Clinical Philosophy")
+        st.markdown("### âš•ï¸ Clinical Philosophy")
         st.markdown("""
         <div style='background: white; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);'>
             <div style='font-size: 0.88rem; color: #4a5568; line-height: 1.8;'>
-                <b style='color:#1e3a5f;'>RenalCare OS acts as:</b><br><br>
-                🧪 <b>AI Clinical Pharmacist</b> — Drug safety, dose optimization, monitoring<br><br>
-                🏥 <b>AI Nephrology Assistant</b> — Risk stratification, evidence retrieval<br><br>
-                💰 <b>AI Healthcare Economist</b> — Burden quantification, cost drivers<br><br>
-                🥗 <b>AI Renal Dietitian</b> — Personalised nutrition guidance<br><br>
+                <b style='color:#1e3a5f;'>RenalCare AI acts as:</b><br><br>
+                ðŸ§ª <b>AI Clinical Pharmacist</b> â€” Drug safety, dose optimization, monitoring<br><br>
+                ðŸ¥ <b>AI Nephrology Assistant</b> â€” Risk stratification, evidence retrieval<br><br>
+                ðŸ’° <b>AI Healthcare Economist</b> â€” Burden quantification, cost drivers<br><br>
+                ðŸ¥— <b>AI Renal Dietitian</b> â€” Personalised nutrition guidance<br><br>
                 <div style='background:#ebf8ff; border-left:3px solid #3182ce; padding:0.6rem 0.8rem; border-radius:4px; margin-top:0.5rem;'>
                     <b>Not replacing clinicians.</b><br>Augmenting clinical decision-making with evidence-based AI intelligence.
                 </div>
@@ -197,14 +197,14 @@ def render():
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Tech stack
-    st.markdown("### 🛠️ Technology Stack")
+    st.markdown("### ðŸ› ï¸ Technology Stack")
     tech_cols = st.columns(5)
     tech_items = [
-        ("🐍", "Python", "Core Language"),
-        ("⚡", "Streamlit", "Frontend UI"),
-        ("🤖", "OpenAI / Gemini", "AI Engine"),
-        ("📊", "Plotly", "Visualisation"),
-        ("🗄️", "FAISS", "Vector Search"),
+        ("ðŸ", "Python", "Core Language"),
+        ("âš¡", "Streamlit", "Frontend UI"),
+        ("ðŸ¤–", "OpenAI / Gemini", "AI Engine"),
+        ("ðŸ“Š", "Plotly", "Visualisation"),
+        ("ðŸ—„ï¸", "FAISS", "Vector Search"),
     ]
     for col, (icon, name, desc) in zip(tech_cols, tech_items):
         with col:
@@ -220,7 +220,7 @@ def render():
     st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("""
     <div style='text-align:center; font-size:0.75rem; color:#a0aec0;'>
-        RenalCare OS v1.0 — Clinical Decision Support Only — Not a substitute for professional medical advice<br>
-        Built on KDIGO Guidelines · Evidence-Based Clinical Pharmacy · Published Pharmacoeconomic Research
+        RenalCare AI v1.0 â€” Clinical Decision Support Only â€” Not a substitute for professional medical advice<br>
+        Built on KDIGO Guidelines Â· Evidence-Based Clinical Pharmacy Â· Published Pharmacoeconomic Research
     </div>
     """, unsafe_allow_html=True)

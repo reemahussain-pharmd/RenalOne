@@ -1,5 +1,5 @@
-"""
-Kidney Nutrition Intelligence — RenalCare OS
+﻿"""
+Kidney Nutrition Intelligence â€” RenalCare AI
 Analyses food suitability for CKD patients based on stage and clinical status.
 """
 import sys
@@ -47,9 +47,9 @@ class FoodAssessment:
 
 
 SUITABILITY_MAP = {
-    "Safe": {"color": "#27ae60", "icon": "✅", "label": "Generally Suitable"},
-    "Caution": {"color": "#f39c12", "icon": "⚠️", "label": "Use Caution / Portion Control"},
-    "Avoid": {"color": "#e74c3c", "icon": "🚫", "label": "Needs Review — Limit/Avoid"},
+    "Safe": {"color": "#27ae60", "icon": "âœ…", "label": "Generally Suitable"},
+    "Caution": {"color": "#f39c12", "icon": "âš ï¸", "label": "Use Caution / Portion Control"},
+    "Avoid": {"color": "#e74c3c", "icon": "ðŸš«", "label": "Needs Review â€” Limit/Avoid"},
 }
 
 
@@ -97,11 +97,11 @@ def _assess_suitability(nutrients: NutrientValues, limits: dict, profile: Nutrit
 
     if nutrients.potassium_mg > k_limit_meal:
         high_count += 1
-        concerns.append(f"High potassium ({nutrients.potassium_mg:.0f} mg/serving vs recommended ≤{k_limit_meal:.0f} mg/meal)")
+        concerns.append(f"High potassium ({nutrients.potassium_mg:.0f} mg/serving vs recommended â‰¤{k_limit_meal:.0f} mg/meal)")
         tips.append("Leach high-potassium vegetables by peeling, chopping, and boiling in large water; discard water")
     elif nutrients.potassium_mg > k_limit_meal * 0.7:
         moderate_count += 1
-        concerns.append(f"Moderate potassium ({nutrients.potassium_mg:.0f} mg/serving) — portion mindfully")
+        concerns.append(f"Moderate potassium ({nutrients.potassium_mg:.0f} mg/serving) â€” portion mindfully")
 
     if nutrients.sodium_mg > na_limit_meal:
         high_count += 1
@@ -117,7 +117,7 @@ def _assess_suitability(nutrients: NutrientValues, limits: dict, profile: Nutrit
 
     if profile.has_diabetes and nutrients.calories > 200:
         moderate_count += 1
-        concerns.append("High calorie density — monitor carbohydrate intake for glycaemic control")
+        concerns.append("High calorie density â€” monitor carbohydrate intake for glycaemic control")
 
     if not concerns:
         tips.append("This food is generally well-tolerated for your CKD stage in recommended portion sizes")
@@ -176,7 +176,7 @@ def analyse_food(food_name: str, profile: NutritionProfile) -> Optional[FoodAsse
 
     note = raw_data.get("note")
     if note:
-        tips.insert(0, f"📝 {note}")
+        tips.insert(0, f"ðŸ“ {note}")
 
     return FoodAssessment(
         food_name=food_name.title(),
@@ -191,7 +191,7 @@ def analyse_food(food_name: str, profile: NutritionProfile) -> Optional[FoodAsse
 
 
 def analyse_ai_food(food_description: str, profile: NutritionProfile) -> Optional[FoodAssessment]:
-    """For foods not in database — use AI to estimate nutrients."""
+    """For foods not in database â€” use AI to estimate nutrients."""
     prompt = f"""You are a renal dietitian AI. Estimate the nutritional content per 100g of: "{food_description}"
 
 Provide ONLY a JSON object with these exact keys (numbers only, no units):
@@ -226,7 +226,7 @@ Provide ONLY a JSON object with these exact keys (numbers only, no units):
                 suitability_color=SUITABILITY_MAP[suitability]["color"],
                 reasons=reasons,
                 tips=tips,
-                ai_insight=ai_insight + "\n\n*Nutrient values estimated by AI — consult a renal dietitian for precise assessment.*",
+                ai_insight=ai_insight + "\n\n*Nutrient values estimated by AI â€” consult a renal dietitian for precise assessment.*",
             )
     except Exception:
         pass

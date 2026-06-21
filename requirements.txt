@@ -1,4 +1,4 @@
-# RenalCare OS V1 — Streamlit Cloud compatible requirements
+﻿# RenalCare AI V1 â€” Streamlit Cloud compatible requirements
 
 # Core UI
 streamlit>=1.32.0
@@ -25,7 +25,7 @@ pypdf>=4.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
 
-# Optional — uncomment locally for full ML + vector search:
+# Optional â€” uncomment locally for full ML + vector search:
 # scikit-learn>=1.4.0
 # xgboost>=2.0.0
 # faiss-cpu>=1.8.0

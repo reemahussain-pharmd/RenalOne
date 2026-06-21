@@ -1,7 +1,7 @@
-@echo off
+﻿@echo off
 echo.
 echo  ====================================================
-echo   RenalCare OS - AI Kidney Disease Intelligence
+echo   RenalCare AI - AI Kidney Disease Intelligence
 echo  ====================================================
 echo.
 echo  Starting application...

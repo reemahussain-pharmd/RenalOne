@@ -1,4 +1,4 @@
-"""Shared helper functions for RenalCare OS."""
+﻿"""Shared helper functions for RenalCare AI."""
 import os
 import sys
 from pathlib import Path
@@ -19,7 +19,7 @@ def load_env():
             load_dotenv(env_path)
     except ImportError:
         pass
-    # Streamlit Cloud secrets → env vars
+    # Streamlit Cloud secrets â†’ env vars
     try:
         import streamlit as st
         for key in ["OPENAI_API_KEY", "GOOGLE_API_KEY"]:
@@ -126,7 +126,7 @@ def get_ckd_stage(egfr: float) -> dict:
 def format_currency(amount: float, currency: str = "INR") -> str:
     """Format number as currency string."""
     if currency == "INR":
-        return f"₹{amount:,.0f}"
+        return f"â‚¹{amount:,.0f}"
     return f"${amount:,.0f}"
 
 

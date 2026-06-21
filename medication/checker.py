@@ -1,5 +1,5 @@
-"""
-Medication Intelligence Engine — RenalCare OS
+﻿"""
+Medication Intelligence Engine â€” RenalCare AI
 Clinical Pharmacist AI module for drug safety in CKD patients.
 """
 import sys
@@ -97,7 +97,7 @@ def _check_interactions(drugs: list[str], labs: dict) -> list[DrugFlag]:
     def has(keyword: str) -> bool:
         return any(keyword in d for d in drug_lower_list)
 
-    # ACEi/ARB + potassium-sparing diuretic → hyperkalemia risk
+    # ACEi/ARB + potassium-sparing diuretic â†’ hyperkalemia risk
     raas = has("lisinopril") or has("ramipril") or has("enalapril") or has("valsartan") or has("losartan") or has("telmisartan")
     k_sparing = has("spironolactone") or has("eplerenone") or has("amiloride")
     if raas and k_sparing:
@@ -201,7 +201,7 @@ def _ai_medication_analysis(inp: MedicationInput, flags: list[DrugFlag]) -> str:
 
 Patient Profile:
 - Diagnoses: {', '.join(inp.diagnoses)}
-- eGFR: {inp.egfr or 'Not provided'} mL/min/1.73m²
+- eGFR: {inp.egfr or 'Not provided'} mL/min/1.73mÂ²
 - CKD Stage: {inp.ckd_stage or 'Not specified'}
 - Serum Creatinine: {inp.serum_creatinine or 'Not provided'} mg/dL
 - Potassium: {inp.potassium or 'Not provided'} mEq/L
@@ -233,10 +233,10 @@ Do NOT make prescribing decisions. Present considerations only."""
         mod = [f for f in flags if f.severity == "Moderate"]
         return (
             f"**Medication Review Summary**\n\n"
-            f"{'⚠️ ' + str(len(high)) + ' high-severity concern(s) identified.' if high else ''}\n"
-            f"{'ℹ️ ' + str(len(mod)) + ' moderate concern(s) identified.' if mod else ''}\n\n"
+            f"{'âš ï¸ ' + str(len(high)) + ' high-severity concern(s) identified.' if high else ''}\n"
+            f"{'â„¹ï¸ ' + str(len(mod)) + ' moderate concern(s) identified.' if mod else ''}\n\n"
             f"**Key Concerns:**\n" +
-            "\n".join(f"• **{f.drug}**: {f.detail}" for f in flags[:5]) +
+            "\n".join(f"â€¢ **{f.drug}**: {f.detail}" for f in flags[:5]) +
             "\n\n*Please review flagged items with a qualified clinical pharmacist or nephrologist.*"
         )
     return "No significant medication concerns identified based on rule-based analysis. Clinical pharmacist review recommended for comprehensive assessment."
