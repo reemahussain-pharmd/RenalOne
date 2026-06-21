@@ -150,15 +150,65 @@ def generate_report(report_data: dict) -> bytes:
 
     # ---- PATIENT SUMMARY ----
     story.append(_build_section_bar("PATIENT SUMMARY", NAVY))
+    profile = report_data.get("patient_profile") or {}
     patient_rows = [
-        ("Patient Name", patient_name),
-        ("Report Date", report_date),
-        ("Report ID", report_id),
-        ("Provider", report_data.get("provider", "—")),
-        ("Institution", report_data.get("institution", "—")),
+        ("Patient Name",    patient_name),
+        ("Age / Gender",    f"{profile.get('age','—')} yrs  |  {profile.get('gender','—')}"),
+        ("Dialysis Type",   profile.get("dialysis_type", "—")),
+        ("Nephrologist",    profile.get("nephrologist", report_data.get("provider", "—"))),
+        ("CKD Dx Year",     str(profile.get("diagnosis_year", "—"))),
+        ("Report Date",     report_date),
+        ("Report ID",       report_id),
+        ("Institution",     report_data.get("institution", "—")),
     ]
     story.append(_kv_table(patient_rows))
     story.append(Spacer(1, 0.3*cm))
+
+    # ---- EXECUTIVE SUMMARY — ASSESSMENT AT A GLANCE ----
+    risk        = report_data.get("risk_result")
+    med         = report_data.get("med_result")
+    econ        = report_data.get("econ_result")
+    adhr        = report_data.get("adherence_result")
+    nutr        = report_data.get("nutrition_result")
+
+    completed_modules = []
+    if risk: completed_modules.append(("Kidney Risk Assessment", f"Stage {_g(risk,'ckd_stage','—')} | Risk: {_g(risk,'risk_category','—')} | eGFR: {_g(risk,'egfr_value','—')} mL/min", _risk_color(_g(risk,"risk_category",""))))
+    if med:  completed_modules.append(("Medication Intelligence", f"{len(getattr(med,'flags',[]))} drug flags | Highest severity: {max((getattr(f,'severity','') for f in getattr(med,'flags',[])),default='None')}", ORANGE))
+    if nutr: completed_modules.append(("Nutrition Intelligence", f"Foods logged: {len(nutr.get('log',[]))} | Stage: {nutr.get('ckd_stage','—')}", TEAL))
+    if econ:
+        esym = report_data.get("econ_symbol", "")
+        completed_modules.append(("Pharmacoeconomics", f"{esym}{_g(econ,'total_monthly',0):,.0f}/month | {_g(econ,'financial_risk_category','—')}", colors.HexColor("#8e44ad")))
+    if adhr:
+        adhr_score = adhr.get("overall", 0) if isinstance(adhr, dict) else getattr(adhr, "overall", 0)
+        adhr_level = adhr.get("risk_level","—") if isinstance(adhr, dict) else getattr(adhr, "risk_level","—")
+        completed_modules.append(("Patient Adherence", f"Score: {adhr_score:.0f}/100 | {adhr_level} Adherence", GREEN if adhr_score >= 70 else ORANGE if adhr_score >= 50 else RED))
+
+    if completed_modules:
+        story.append(_build_section_bar("EXECUTIVE SUMMARY — ASSESSMENTS AT A GLANCE", colors.HexColor("#2c3e50")))
+        exec_data = [[
+            Paragraph("<b>Module</b>", ParagraphStyle("eh", fontSize=9, fontName="Helvetica-Bold", textColor=WHITE)),
+            Paragraph("<b>Key Finding</b>", ParagraphStyle("eh2", fontSize=9, fontName="Helvetica-Bold", textColor=WHITE)),
+            Paragraph("<b>Status</b>", ParagraphStyle("eh3", fontSize=9, fontName="Helvetica-Bold", textColor=WHITE, alignment=TA_CENTER)),
+        ]]
+        for mod_name, finding, mod_color in completed_modules:
+            exec_data.append([
+                Paragraph(f"<b>{mod_name}</b>", ParagraphStyle("em", fontSize=8, fontName="Helvetica-Bold", textColor=NAVY)),
+                Paragraph(finding, ParagraphStyle("ef", fontSize=8, fontName="Helvetica")),
+                Paragraph("✓ Done", ParagraphStyle("es", fontSize=8, fontName="Helvetica-Bold", textColor=mod_color, alignment=TA_CENTER)),
+            ])
+        exec_t = Table(exec_data, colWidths=[5.5*cm, 11*cm, 2.5*cm])
+        exec_t.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2c3e50")),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [WHITE, colors.HexColor("#f8f9fa")]),
+            ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#d0d7de")),
+            ("TOPPADDING",    (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ("LEFTPADDING",   (0, 0), (-1, -1), 8),
+            ("RIGHTPADDING",  (0, 0), (-1, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ]))
+        story.append(exec_t)
+        story.append(Spacer(1, 0.3*cm))
 
     # ---- KIDNEY RISK ANALYSIS ----
     # page passes key "risk_result"
@@ -273,12 +323,13 @@ def generate_report(report_data: dict) -> bytes:
     # page passes key "econ_result"
     econ = report_data.get("econ_result")
     if econ:
+        esym = report_data.get("econ_symbol", "")
         story.append(_build_section_bar("PHARMACOECONOMIC ANALYSIS", colors.HexColor("#8e44ad")))
         econ_rows = [
-            ("Direct Medical Cost (Annual)", f"₹{_g(econ, 'direct_medical_annual', 0):,.0f}"),
-            ("Direct Non-Medical Cost (Annual)", f"₹{_g(econ, 'direct_non_medical_annual', 0):,.0f}"),
-            ("Indirect Cost (Annual)", f"₹{_g(econ, 'indirect_annual', 0):,.0f}"),
-            ("Total Estimated Annual Cost", f"₹{_g(econ, 'total_annual', 0):,.0f}"),
+            ("Direct Medical Cost (Annual)", f"{esym}{_g(econ, 'direct_medical_annual', 0):,.0f}"),
+            ("Direct Non-Medical Cost (Annual)", f"{esym}{_g(econ, 'direct_non_medical_annual', 0):,.0f}"),
+            ("Indirect Cost (Annual)", f"{esym}{_g(econ, 'indirect_annual', 0):,.0f}"),
+            ("Total Estimated Annual Cost", f"{esym}{_g(econ, 'total_annual', 0):,.0f}"),
             ("Income Burden", f"{_g(econ, 'income_burden_pct', 0):.1f}% of annual income"),
             ("Financial Risk Category", _g(econ, "financial_risk_category")),
             ("Financial Burden Score", f"{_g(econ, 'financial_burden_score', 0):.1f} / 100"),
@@ -336,6 +387,42 @@ def generate_report(report_data: dict) -> bytes:
                 ]))
                 story.append(ft)
             story.append(Spacer(1, 0.3*cm))
+
+    # ---- PATIENT ADHERENCE ANALYSIS ----
+    adhr = report_data.get("adherence_result")
+    if adhr:
+        adhr_score = adhr.get("overall", 0) if isinstance(adhr, dict) else getattr(adhr, "overall", 0)
+        adhr_level = adhr.get("risk_level", "—") if isinstance(adhr, dict) else getattr(adhr, "risk_level", "—")
+        adhr_domains = adhr.get("domains", {}) if isinstance(adhr, dict) else {}
+        adhr_color = GREEN if adhr_score >= 70 else (ORANGE if adhr_score >= 50 else RED)
+        story.append(_build_section_bar("PATIENT ADHERENCE ANALYSIS", colors.HexColor("#9b59b6")))
+        adhr_rows = [
+            ("Overall Adherence Score", f"{adhr_score:.1f} / 100 — {adhr_level}"),
+            ("Medication Adherence",    f"{adhr_domains.get('medication', '—'):.0f} / 100"    if isinstance(adhr_domains.get('medication'), (int, float)) else "—"),
+            ("Dietary Adherence",       f"{adhr_domains.get('dietary', '—'):.0f} / 100"       if isinstance(adhr_domains.get('dietary'), (int, float)) else "—"),
+            ("Fluid Management",        f"{adhr_domains.get('fluid', '—'):.0f} / 100"         if isinstance(adhr_domains.get('fluid'), (int, float)) else "—"),
+            ("Appointment Adherence",   f"{adhr_domains.get('appointments', '—'):.0f} / 100"  if isinstance(adhr_domains.get('appointments'), (int, float)) else "—"),
+            ("Lifestyle Modification",  f"{adhr_domains.get('lifestyle', '—'):.0f} / 100"     if isinstance(adhr_domains.get('lifestyle'), (int, float)) else "—"),
+        ]
+        story.append(_kv_table(adhr_rows))
+        # Priority interventions for domains below 70
+        priority_doms = [(k, v) for k, v in adhr_domains.items() if isinstance(v, (int, float)) and v < 70]
+        priority_doms.sort(key=lambda x: x[1])
+        if priority_doms:
+            story.append(Spacer(1, 0.15*cm))
+            story.append(Paragraph("<b>Adherence Intervention Priorities</b>", s["subsection"]))
+            DOMAIN_LABELS = {"medication": "Medication Adherence", "dietary": "Dietary Adherence",
+                             "fluid": "Fluid Management", "appointments": "Appointment Adherence",
+                             "lifestyle": "Lifestyle Modification"}
+            DOMAIN_ACTIONS = {"medication": "Comprehensive Medication Review (CMR) — Pharmacist",
+                              "dietary": "Renal Dietitian Referral + Dietary Education",
+                              "fluid": "Fluid Restriction Counselling + Daily Weight Monitoring",
+                              "appointments": "Social Work Assessment — Transport & Schedule Barriers",
+                              "lifestyle": "Renal Rehabilitation Referral + Behavioural Support"}
+            for i, (dom, score) in enumerate(priority_doms[:3]):
+                priority = ["URGENT", "HIGH PRIORITY", "RECOMMENDED"][i]
+                story.append(Paragraph(f"• <b>[{priority}]</b> {DOMAIN_LABELS.get(dom, dom)} ({score:.0f}/100): {DOMAIN_ACTIONS.get(dom, '')}", s["body"]))
+        story.append(Spacer(1, 0.3*cm))
 
     # ---- CLINICAL NOTES ----
     notes = report_data.get("clinical_notes", "")

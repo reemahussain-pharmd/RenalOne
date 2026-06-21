@@ -30,11 +30,13 @@ def render():
     """)
 
     # ── Data availability check ────────────────────────────────────────────
-    risk_data = st.session_state.get("risk_result")
-    med_data  = st.session_state.get("med_result")
-    econ_data = st.session_state.get("econ_result")
+    risk_data  = st.session_state.get("risk_result")
+    med_data   = st.session_state.get("med_result")
+    econ_data  = st.session_state.get("econ_result")
+    adhr_data  = st.session_state.get("adherence_result")
+    profile    = st.session_state.get("patient_profile")
 
-    has_any = any([risk_data, med_data, econ_data])
+    has_any = any([risk_data, med_data, econ_data, adhr_data])
 
     left_col, right_col = st.columns([1.1, 1.5])
 
@@ -46,9 +48,10 @@ def render():
         """)
 
         modules_status = [
-            ("Kidney Risk Assessment", risk_data, "Risk",       "\U0001f9e0"),
-            ("Medication Intelligence", med_data,  "Medication", "\U0001f48a"),
-            ("Pharmacoeconomics",      econ_data,  "Economics",  "\U0001f4ca"),
+            ("Kidney Risk Assessment",   risk_data,  "Risk",       "\U0001f9e0"),
+            ("Medication Intelligence",  med_data,   "Medication", "\U0001f48a"),
+            ("Pharmacoeconomics",        econ_data,  "Economics",  "\U0001f4ca"),
+            ("Adherence Intelligence",   adhr_data,  "Adherence",  "\U0001f3af"),
         ]
 
         for name, data, page_key, icon in modules_status:
@@ -93,9 +96,10 @@ def render():
         provider     = st.text_input("Ordering Clinician", value="Dr. Reema Hussain, PharmD")
         institution  = st.text_input("Institution", value="RenalCare AI Clinic")
 
-        include_risk = st.checkbox("Include Risk Assessment",  value=bool(risk_data), disabled=not risk_data)
-        include_med  = st.checkbox("Include Medication Review", value=bool(med_data), disabled=not med_data)
-        include_econ = st.checkbox("Include Economic Analysis", value=bool(econ_data), disabled=not econ_data)
+        include_risk = st.checkbox("Include Risk Assessment",   value=bool(risk_data), disabled=not risk_data)
+        include_med  = st.checkbox("Include Medication Review",  value=bool(med_data),  disabled=not med_data)
+        include_econ = st.checkbox("Include Economic Analysis",  value=bool(econ_data), disabled=not econ_data)
+        include_adhr = st.checkbox("Include Adherence Analysis", value=bool(adhr_data), disabled=not adhr_data)
 
         gen_btn = st.button(
             "\U0001f4c4  Generate PDF Report",
@@ -111,25 +115,32 @@ def render():
                 risk_data if include_risk else None,
                 med_data  if include_med  else None,
                 econ_data if include_econ else None,
+                adhr_data if include_adhr else None,
+                profile,
             )
         elif has_any:
-            _render_preview(risk_data, med_data, econ_data)
+            _render_preview(risk_data, med_data, econ_data, adhr_data)
         else:
             _render_empty_state()
 
 
-def _generate_report(patient_name, provider, institution, risk_data, med_data, econ_data):
+def _generate_report(patient_name, provider, institution, risk_data, med_data, econ_data,
+                     adhr_data=None, profile=None):
     try:
         from reports.generator import generate_report
+        econ_cfg = st.session_state.get("econ_cfg", {})
         report_data = {
-            "patient_name": patient_name or "Anonymous",
-            "provider": provider,
-            "institution": institution,
-            "date": datetime.now().strftime("%B %d, %Y"),
+            "patient_name":      patient_name or "Anonymous",
+            "provider":          provider,
+            "institution":       institution,
+            "date":              datetime.now().strftime("%B %d, %Y"),
             "risk_result":       risk_data,
             "med_result":        med_data,
             "econ_result":       econ_data,
+            "econ_symbol":       econ_cfg.get("symbol", ""),
             "nutrition_result":  st.session_state.get("nutrition_result"),
+            "adherence_result":  adhr_data,
+            "patient_profile":   profile,
         }
         pdf_bytes = generate_report(report_data)
 
@@ -149,14 +160,14 @@ def _generate_report(patient_name, provider, institution, risk_data, med_data, e
         </div>
         """)
 
-        _render_preview(risk_data, med_data, econ_data, show_header=False)
+        _render_preview(risk_data, med_data, econ_data, adhr_data, show_header=False)
 
     except Exception as e:
         st.error(f"Report generation error: {e}")
         st.info("Ensure ReportLab is installed: pip install reportlab")
 
 
-def _render_preview(risk_data, med_data, econ_data, show_header=True):
+def _render_preview(risk_data, med_data, econ_data, adhr_data=None, show_header=True):
     now = datetime.now().strftime("%B %d, %Y at %I:%M %p")
 
     if show_header:
@@ -235,6 +246,11 @@ def _render_preview(risk_data, med_data, econ_data, show_header=True):
         """
 
     if econ_data:
+        econ_cfg   = st.session_state.get("econ_cfg", {})
+        esym       = econ_cfg.get("symbol", "")
+        e_monthly  = getattr(econ_data, "total_monthly", 0)
+        e_cat      = getattr(econ_data, "financial_risk_category", "")
+        is_cat     = e_cat == "Catastrophic"
         preview_html += f"""
         <div style="margin-bottom:1.2rem;">
             <div style="font-size:0.9rem;font-weight:800;color:#1E3A5F;border-bottom:2px solid #E2E8F0;
@@ -244,19 +260,43 @@ def _render_preview(risk_data, med_data, econ_data, show_header=True):
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
                 <div style="background:#EFF6FF;border-radius:8px;padding:0.6rem;text-align:center;">
                     <div style="font-size:1.1rem;font-weight:800;color:#1D4ED8;">
-                        ${getattr(econ_data, 'total_monthly_cost', 0):,.0f}
+                        {esym}{e_monthly:,.0f}
                     </div>
                     <div style="font-size:0.68rem;font-weight:600;color:#1D4ED8;text-transform:uppercase;">Monthly Cost</div>
                 </div>
-                <div style="background:{'#FEE2E2' if getattr(econ_data,'catastrophic_expenditure',False) else '#D1FAE5'};
+                <div style="background:{'#FEE2E2' if is_cat else '#D1FAE5'};
                             border-radius:8px;padding:0.6rem;text-align:center;">
                     <div style="font-size:1.1rem;font-weight:800;
-                                color:{'#991B1B' if getattr(econ_data,'catastrophic_expenditure',False) else '#065F46'};">
-                        {'Catastrophic' if getattr(econ_data,'catastrophic_expenditure',False) else 'Manageable'}
+                                color:{'#991B1B' if is_cat else '#065F46'};">
+                        {'Catastrophic' if is_cat else 'Manageable'}
                     </div>
                     <div style="font-size:0.68rem;font-weight:600;
-                                color:{'#991B1B' if getattr(econ_data,'catastrophic_expenditure',False) else '#065F46'};
+                                color:{'#991B1B' if is_cat else '#065F46'};
                                 text-transform:uppercase;">WHO Threshold</div>
+                </div>
+            </div>
+        </div>
+        """
+
+    if adhr_data:
+        adhr_score = adhr_data.get("overall", 0) if isinstance(adhr_data, dict) else getattr(adhr_data, "overall", 0)
+        adhr_level = adhr_data.get("risk_level", "—") if isinstance(adhr_data, dict) else getattr(adhr_data, "risk_level", "—")
+        adhr_color = {"Excellent": "#10B981", "Good": "#22C55E", "Moderate": "#F59E0B", "Poor": "#EF4444"}.get(adhr_level, "#64748B")
+        adhr_bg    = {"Excellent": "#D1FAE5", "Good": "#DCFCE7", "Moderate": "#FEF3C7", "Poor": "#FEE2E2"}.get(adhr_level, "#F8FAFC")
+        preview_html += f"""
+        <div style="margin-bottom:1.2rem;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1E3A5F;border-bottom:2px solid #E2E8F0;
+                        padding-bottom:6px;margin-bottom:0.8rem;">
+                \U0001f3af Patient Adherence Intelligence
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                <div style="background:{adhr_bg};border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.3rem;font-weight:800;color:{adhr_color};">{adhr_score:.0f}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:{adhr_color};text-transform:uppercase;">Adherence Score</div>
+                </div>
+                <div style="background:{adhr_bg};border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:800;color:{adhr_color};">{adhr_level}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:{adhr_color};text-transform:uppercase;">Risk Level</div>
                 </div>
             </div>
         </div>

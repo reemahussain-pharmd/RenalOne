@@ -88,13 +88,47 @@ def render():
 
     sh("<div style='margin-top:1.5rem;'></div>")
 
+    # ── Patient Profile Card ───────────────────────────────────────────────
+    profile = st.session_state.get("patient_profile")
+    if profile:
+        p_name  = profile.get("name", "Patient")
+        p_age   = profile.get("age", "—")
+        p_sex   = profile.get("gender", "—")
+        p_dial  = profile.get("dialysis_type", "—")
+        p_neph  = profile.get("nephrologist", "—")
+        sh(f'<div style="background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:1px solid #BFDBFE;border-radius:12px;padding:0.9rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;background:linear-gradient(135deg,#1E3A5F,#6366F1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:white;">{p_name[0].upper() if p_name else "?"}</div><div><div style="font-size:1rem;font-weight:800;color:#0F172A;">{p_name}</div><div style="font-size:0.78rem;color:#475569;">{p_age} yrs &bull; {p_sex} &bull; {p_dial}</div></div></div><div style="display:flex;gap:8px;align-items:center;"><span style="background:#EFF6FF;color:#1D4ED8;font-size:0.72rem;font-weight:600;padding:4px 10px;border-radius:6px;">&#x1f4cb; {p_neph}</span><span style="background:#D1FAE5;color:#065F46;font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:6px;">&#x2713; Profile Set</span></div></div>')
+    else:
+        with st.expander("👤 Set Up Patient Profile — Start Here", expanded=True):
+            pc1, pc2, pc3 = st.columns(3)
+            with pc1:
+                pf_name  = st.text_input("Patient Name / ID", placeholder="e.g. Mrs. Sharma / MRN-001", key="pf_name")
+                pf_age   = st.number_input("Age (years)", 18, 100, 55, key="pf_age")
+            with pc2:
+                pf_sex   = st.selectbox("Gender", ["Female", "Male", "Non-binary / Prefer not to say"], key="pf_sex")
+                pf_dial  = st.selectbox("Dialysis Type", ["Haemodialysis (HD)", "Peritoneal Dialysis (PD)", "Pre-Dialysis CKD", "Post-Transplant"], key="pf_dial")
+            with pc3:
+                pf_neph  = st.text_input("Primary Nephrologist", value="Dr. Reema Hussain, PharmD", key="pf_neph")
+                pf_year  = st.number_input("CKD Diagnosis Year", 2000, 2026, 2022, key="pf_year")
+            if st.button("&#x1f4be;  Save Patient Profile", type="primary"):
+                st.session_state.patient_profile = {
+                    "name": pf_name or "Anonymous",
+                    "age": pf_age,
+                    "gender": pf_sex,
+                    "dialysis_type": pf_dial,
+                    "nephrologist": pf_neph,
+                    "diagnosis_year": pf_year,
+                }
+                st.rerun()
+
+    sh("<div style='margin-top:0.5rem;'></div>")
+
     # ── Section header ─────────────────────────────────────────────────────
     sh("""
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
         <div>
             <div style="font-size:1.1rem;font-weight:800;color:#0F172A;">Clinical Intelligence Modules</div>
             <div style="font-size:0.82rem;color:#64748B;margin-top:2px;">
-                Six integrated modules covering the full renal care workflow
+                Seven integrated modules covering the full renal care workflow
             </div>
         </div>
         <div style="background:#F1F5F9;border-radius:20px;padding:4px 12px;font-size:0.75rem;
@@ -114,15 +148,17 @@ def render():
          "Analyze 37+ foods for potassium, phosphorus, sodium. AI-generated personalized meal guidance."),
         ("Economics",  "#F59E0B", "#FEF3C7", "\U0001f4ca",  "Pharmacoeconomic Intelligence",
          "Cost-of-illness modeling from published hemodialysis burden research in rural India."),
+        ("Adherence",  "#EC4899", "#FCE7F3", "\U0001f3af",  "Patient Adherence Intelligence",
+         "5-domain adherence scoring: medication, dietary, fluid, appointments, and lifestyle. Evidence-based interventions."),
         ("Report",     "#14B8A6", "#CCFBF1", "\U0001f4c4",  "Clinical Report Generator",
-         "Generate professional PDF reports aggregating risk, medication, and economic assessments."),
+         "Generate professional PDF reports aggregating risk, medication, economic, and adherence assessments."),
     ]
 
-    r1_cols = st.columns(3)
+    r1_cols = st.columns(4)
     r2_cols = st.columns(3)
 
     for i, (key, color, bg, icon, title, desc) in enumerate(modules):
-        col = r1_cols[i] if i < 3 else r2_cols[i - 3]
+        col = r1_cols[i] if i < 4 else r2_cols[i - 4]
         with col:
             clicked = st.button(
                 "▶  Open Module",
