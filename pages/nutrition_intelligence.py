@@ -1,4 +1,4 @@
-﻿"""Kidney Nutrition Intelligence Page â€” RenalCare AI."""
+"""Kidney Nutrition Intelligence Page — RenalCare AI."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -30,15 +30,15 @@ def render():
     st.markdown("""
     <div style='background: linear-gradient(135deg, #1a4731, #27ae60);
                 border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>ðŸ¥— Kidney Nutrition Intelligence</h2>
+        <h2 style='color:white; margin:0; font-size:1.5rem;'>🥗 Kidney Nutrition Intelligence</h2>
         <p style='color:#a9f7c4; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            Personalised renal nutrition assistant Â· CKD stage-specific food analysis
+            Personalised renal nutrition assistant · CKD stage-specific food analysis
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     # Patient profile sidebar
-    with st.expander("âš™ï¸ Patient Nutrition Profile", expanded=True):
+    with st.expander("⚙️ Patient Nutrition Profile", expanded=True):
         pc1, pc2, pc3, pc4 = st.columns(4)
         with pc1:
             ckd_stage = st.selectbox("CKD Stage", [1, 2, 3, 4, 5], index=2, key="nut_stage")
@@ -67,15 +67,15 @@ def render():
 
     st.markdown(f"""
     <div class='info-box' style='font-size:0.85rem;'>
-        <b>ðŸ“Š Daily limits for CKD Stage {ckd_stage}{'  (Dialysis)' if on_dialysis else ''}:</b>
-        Potassium â‰¤{limits['potassium_mg']:,} mg Â· Sodium â‰¤{limits['sodium_mg']:,} mg Â·
-        Phosphorus â‰¤{limits['phosphorus_mg']:,} mg Â· Protein {limits['protein_g_per_kg']} g/kg/day
+        <b>📊 Daily limits for CKD Stage {ckd_stage}{'  (Dialysis)' if on_dialysis else ''}:</b>
+        Potassium ≤{limits['potassium_mg']:,} mg · Sodium ≤{limits['sodium_mg']:,} mg ·
+        Phosphorus ≤{limits['phosphorus_mg']:,} mg · Protein {limits['protein_g_per_kg']} g/kg/day
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    tab1, tab2, tab3 = st.tabs(["ðŸ” Search Food", "ðŸ“· Describe Food (AI)", "ðŸ“Š Nutrient Guide"])
+    tab1, tab2, tab3 = st.tabs(["🔍 Search Food", "📷 Describe Food (AI)", "📊 Nutrient Guide"])
 
     # ---- Tab 1: Search ----
     with tab1:
@@ -92,7 +92,7 @@ def render():
             )
         with btn_col:
             st.markdown("<br>", unsafe_allow_html=True)
-            analyse_btn = st.button("ðŸ” Analyse", key="analyse_search", use_container_width=True)
+            analyse_btn = st.button("🔍 Analyse", key="analyse_search", use_container_width=True)
 
         if analyse_btn and selected_food:
             with st.spinner(f"Analysing {selected_food.title()}..."):
@@ -117,7 +117,7 @@ def render():
             "Describe the food",
             placeholder="e.g. Grilled salmon fillet, Idli (South Indian rice cake), Masala dosa, Palak paneer",
         )
-        if st.button("ðŸ¤– AI Nutritional Analysis", key="ai_analyse", use_container_width=False):
+        if st.button("🤖 AI Nutritional Analysis", key="ai_analyse", use_container_width=False):
             if food_desc.strip():
                 with st.spinner("Running AI nutritional analysis..."):
                     assessment = analyse_ai_food(food_desc.strip(), profile)
@@ -130,7 +130,7 @@ def render():
 
     # ---- Tab 3: Nutrient Guide ----
     with tab3:
-        st.markdown("### ðŸ“Š Renal Nutrition Quick Reference")
+        st.markdown("### 📊 Renal Nutrition Quick Reference")
         _show_nutrition_guide(ckd_stage, on_dialysis)
 
 
@@ -157,7 +157,7 @@ def _display_assessment(assessment, limits: dict, profile: NutritionProfile):
     n = assessment.nutrients
     col_left, col_right = st.columns([1.2, 1])
     with col_left:
-        st.markdown("#### ðŸ§ª Nutrient Content (per serving)")
+        st.markdown("#### 🧪 Nutrient Content (per serving)")
         _nutrient_bar("Potassium", n.potassium_mg, "mg", limits["potassium_mg"] * 0.3)
         _nutrient_bar("Sodium", n.sodium_mg, "mg", limits["sodium_mg"] * 0.3)
         _nutrient_bar("Phosphorus", n.phosphorus_mg, "mg", limits["phosphorus_mg"] * 0.3)
@@ -168,9 +168,9 @@ def _display_assessment(assessment, limits: dict, profile: NutritionProfile):
         st.markdown("<br>", unsafe_allow_html=True)
         ncols = st.columns(5)
         metrics = [
-            ("Kâº", f"{n.potassium_mg:.0f}", "mg", "#e74c3c"),
+            ("K⁺", f"{n.potassium_mg:.0f}", "mg", "#e74c3c"),
             ("Na", f"{n.sodium_mg:.0f}", "mg", "#e67e22"),
-            ("POâ‚„", f"{n.phosphorus_mg:.0f}", "mg", "#8e44ad"),
+            ("PO₄", f"{n.phosphorus_mg:.0f}", "mg", "#8e44ad"),
             ("Protein", f"{n.protein_g:.1f}", "g", "#2980b9"),
             ("Cal", f"{n.calories:.0f}", "kcal", "#27ae60"),
         ]
@@ -194,22 +194,22 @@ def _display_assessment(assessment, limits: dict, profile: NutritionProfile):
 
     # Concerns and tips
     if assessment.reasons:
-        st.markdown("#### âš ï¸ Dietary Considerations")
+        st.markdown("#### ⚠️ Dietary Considerations")
         for reason in assessment.reasons:
             st.markdown(f"""
-            <div class='warning-box' style='font-size:0.85rem; margin:0.3rem 0;'>âš ï¸ {reason}</div>
+            <div class='warning-box' style='font-size:0.85rem; margin:0.3rem 0;'>⚠️ {reason}</div>
             """, unsafe_allow_html=True)
 
     if assessment.tips:
-        st.markdown("#### ðŸ’¡ Dietary Tips")
+        st.markdown("#### 💡 Dietary Tips")
         for tip in assessment.tips:
             st.markdown(f"""
-            <div class='info-box' style='font-size:0.85rem; margin:0.3rem 0;'>ðŸ’¡ {tip}</div>
+            <div class='info-box' style='font-size:0.85rem; margin:0.3rem 0;'>💡 {tip}</div>
             """, unsafe_allow_html=True)
 
     # AI insight
     if assessment.ai_insight:
-        st.markdown("#### ðŸ¤– Renal Dietitian AI Insight")
+        st.markdown("#### 🤖 Renal Dietitian AI Insight")
         st.markdown(f"""
         <div style='background:white; border-radius:10px; padding:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
                     border-left:4px solid #27ae60; font-size:0.88rem; color:#4a5568; line-height:1.6;'>
@@ -223,17 +223,17 @@ def _show_nutrition_guide(stage: int, on_dialysis: bool):
 
     st.markdown(f"""
     <div style='background:white; border-radius:10px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-        <h4 style='color:#1e3a5f; margin-top:0;'>Daily Limits â€” CKD Stage {stage}{'  (Dialysis)' if on_dialysis else ''}</h4>
+        <h4 style='color:#1e3a5f; margin-top:0;'>Daily Limits — CKD Stage {stage}{'  (Dialysis)' if on_dialysis else ''}</h4>
         <table style='width:100%; border-collapse:collapse; font-size:0.88rem;'>
             <tr style='background:#ebf8ff;'>
                 <th style='padding:8px 12px; text-align:left; color:#2980b9;'>Nutrient</th>
                 <th style='padding:8px 12px; text-align:right; color:#2980b9;'>Daily Target</th>
                 <th style='padding:8px 12px; text-align:right; color:#2980b9;'>Per Meal (~30%)</th>
             </tr>
-            <tr><td style='padding:7px 12px;'>ðŸŸ  Potassium</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['potassium_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['potassium_mg']*0.3:.0f} mg</td></tr>
-            <tr style='background:#f8f9fa;'><td style='padding:7px 12px;'>ðŸ”µ Sodium</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['sodium_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['sodium_mg']*0.3:.0f} mg</td></tr>
-            <tr><td style='padding:7px 12px;'>ðŸŸ£ Phosphorus</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['phosphorus_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>â‰¤{limits['phosphorus_mg']*0.3:.0f} mg</td></tr>
-            <tr style='background:#f8f9fa;'><td style='padding:7px 12px;'>ðŸŸ¢ Protein</td><td style='text-align:right; padding:7px 12px;'>{limits['protein_g_per_kg']} g/kg/day</td><td style='text-align:right; padding:7px 12px;'>â€”</td></tr>
+            <tr><td style='padding:7px 12px;'>🟠 Potassium</td><td style='text-align:right; padding:7px 12px;'>≤{limits['potassium_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>≤{limits['potassium_mg']*0.3:.0f} mg</td></tr>
+            <tr style='background:#f8f9fa;'><td style='padding:7px 12px;'>🔵 Sodium</td><td style='text-align:right; padding:7px 12px;'>≤{limits['sodium_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>≤{limits['sodium_mg']*0.3:.0f} mg</td></tr>
+            <tr><td style='padding:7px 12px;'>🟣 Phosphorus</td><td style='text-align:right; padding:7px 12px;'>≤{limits['phosphorus_mg']:,} mg</td><td style='text-align:right; padding:7px 12px;'>≤{limits['phosphorus_mg']*0.3:.0f} mg</td></tr>
+            <tr style='background:#f8f9fa;'><td style='padding:7px 12px;'>🟢 Protein</td><td style='text-align:right; padding:7px 12px;'>{limits['protein_g_per_kg']} g/kg/day</td><td style='text-align:right; padding:7px 12px;'>—</td></tr>
         </table>
     </div>
     """, unsafe_allow_html=True)
@@ -243,21 +243,21 @@ def _show_nutrition_guide(stage: int, on_dialysis: bool):
     with col1:
         st.markdown("""
         <div style='background:#f0fff4; border:2px solid #27ae60; border-radius:10px; padding:1rem;'>
-            <div style='font-weight:700; color:#1e8449; margin-bottom:0.5rem;'>âœ… Generally Safe</div>
+            <div style='font-weight:700; color:#1e8449; margin-bottom:0.5rem;'>✅ Generally Safe</div>
             <div style='font-size:0.83rem; color:#4a5568; line-height:1.8;'>
-                White rice Â· Cabbage Â· Cauliflower Â· Apple Â· Grapes<br>
-                Egg white Â· White bread Â· Pasta Â· Green beans<br>
-                Watermelon Â· Capsicum Â· Onion
+                White rice · Cabbage · Cauliflower · Apple · Grapes<br>
+                Egg white · White bread · Pasta · Green beans<br>
+                Watermelon · Capsicum · Onion
             </div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown("""
         <div style='background:#fff5f5; border:2px solid #e74c3c; border-radius:10px; padding:1rem;'>
-            <div style='font-weight:700; color:#c0392b; margin-bottom:0.5rem;'>ðŸš« Use Caution / Limit</div>
+            <div style='font-weight:700; color:#c0392b; margin-bottom:0.5rem;'>🚫 Use Caution / Limit</div>
             <div style='font-size:0.83rem; color:#4a5568; line-height:1.8;'>
-                Banana (high Kâº) Â· Potato chips (high Kâº, Na) Â· Spinach (high Kâº)<br>
-                Coconut water Â· Dark chocolate Â· Legumes<br>
+                Banana (high K⁺) · Potato chips (high K⁺, Na) · Spinach (high K⁺)<br>
+                Coconut water · Dark chocolate · Legumes<br>
                 Processed foods (high phosphorus additives)
             </div>
         </div>

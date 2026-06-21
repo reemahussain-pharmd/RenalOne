@@ -1,5 +1,5 @@
-﻿"""
-AI Renal Report Generator â€” RenalCare AI
+"""
+AI Renal Report Generator — RenalCare AI
 Professional PDF report generation using ReportLab.
 """
 import sys
@@ -89,7 +89,7 @@ def _section_header(title: str, color=NAVY) -> list:
 
 
 def _styled_table_style(color):
-    """Dummy â€” used only as marker; header drawn in _section_header."""
+    """Dummy — used only as marker; header drawn in _section_header."""
     return Spacer(1, 0.01*cm)
 
 
@@ -150,8 +150,8 @@ def generate_report(report_data: dict) -> bytes:
     story.append(_build_section_bar("PATIENT SUMMARY", NAVY))
     patient_rows = [
         ("Patient Name", patient_name),
-        ("Age", f"{report_data.get('patient_age', 'â€”')} years"),
-        ("Gender", report_data.get("patient_gender", "â€”")),
+        ("Age", f"{report_data.get('patient_age', '—')} years"),
+        ("Gender", report_data.get("patient_gender", "—")),
         ("Report Date", report_date),
         ("Report ID", report_id),
     ]
@@ -162,14 +162,14 @@ def generate_report(report_data: dict) -> bytes:
     risk = report_data.get("risk_result", {})
     if risk:
         story.append(_build_section_bar("KIDNEY RISK ANALYSIS", BLUE))
-        cat = risk.get("risk_category", "â€”")
+        cat = risk.get("risk_category", "—")
         risk_rows = [
-            ("Kidney Health Score", f"{risk.get('kidney_health_score', 'â€”')} / 100"),
-            ("Risk Score", f"{risk.get('risk_score', 'â€”')} / 100"),
+            ("Kidney Health Score", f"{risk.get('kidney_health_score', '—')} / 100"),
+            ("Risk Score", f"{risk.get('risk_score', '—')} / 100"),
             ("Risk Classification", cat),
-            ("CKD Stage", risk.get("ckd_stage", "â€”")),
-            ("eGFR Category", risk.get("egfr_category", "â€”")),
-            ("Monitoring Priority", risk.get("monitoring_priority", "â€”")),
+            ("CKD Stage", risk.get("ckd_stage", "—")),
+            ("eGFR Category", risk.get("egfr_category", "—")),
+            ("Monitoring Priority", risk.get("monitoring_priority", "—")),
         ]
         story.append(_kv_table(risk_rows))
         story.append(Spacer(1, 0.2*cm))
@@ -204,21 +204,21 @@ def generate_report(report_data: dict) -> bytes:
             story.append(Spacer(1, 0.2*cm))
             story.append(Paragraph("<b>Clinical Recommendations</b>", s["subsection"]))
             for r in recs:
-                story.append(Paragraph(f"â€¢ {r}", s["body"]))
+                story.append(Paragraph(f"• {r}", s["body"]))
         story.append(Spacer(1, 0.3*cm))
 
     # ---- MEDICATION REVIEW ----
     med = report_data.get("medication_result", {})
     if med:
         story.append(_build_section_bar("MEDICATION INTELLIGENCE REVIEW", TEAL))
-        story.append(Paragraph(f"<b>Overall Medication Risk:</b> {med.get('overall_risk', 'â€”')}", s["body"]))
+        story.append(Paragraph(f"<b>Overall Medication Risk:</b> {med.get('overall_risk', '—')}", s["body"]))
         story.append(Spacer(1, 0.1*cm))
 
         flags = med.get("flags", [])
         if flags:
             story.append(Paragraph("<b>Drug Safety Flags</b>", s["subsection"]))
             flag_data = [["Drug / Combination", "Flag Type", "Severity", "Key Concern"]] + [
-                [f.get("drug", ""), f.get("flag_type", ""), f.get("severity", ""), f.get("detail", "")[:60] + "â€¦"]
+                [f.get("drug", ""), f.get("flag_type", ""), f.get("severity", ""), f.get("detail", "")[:60] + "…"]
                 for f in flags
             ]
             ft = Table(flag_data, colWidths=[4.5*cm, 3.5*cm, 2.5*cm, 8.5*cm])
@@ -241,7 +241,7 @@ def generate_report(report_data: dict) -> bytes:
             story.append(Spacer(1, 0.15*cm))
             story.append(Paragraph("<b>Monitoring Requirements</b>", s["subsection"]))
             for m in monitoring:
-                story.append(Paragraph(f"â€¢ {m}", s["body"]))
+                story.append(Paragraph(f"• {m}", s["body"]))
 
         if med.get("ai_narrative"):
             story.append(Spacer(1, 0.15*cm))
@@ -255,12 +255,12 @@ def generate_report(report_data: dict) -> bytes:
     if econ:
         story.append(_build_section_bar("PHARMACOECONOMIC ANALYSIS", colors.HexColor("#8e44ad")))
         econ_rows = [
-            ("Direct Medical Cost (Annual)", f"â‚¹{econ.get('direct_medical_annual', 0):,.0f}"),
-            ("Direct Non-Medical Cost (Annual)", f"â‚¹{econ.get('direct_non_medical_annual', 0):,.0f}"),
-            ("Indirect Cost (Annual)", f"â‚¹{econ.get('indirect_annual', 0):,.0f}"),
-            ("Total Estimated Annual Cost", f"â‚¹{econ.get('total_annual', 0):,.0f}"),
+            ("Direct Medical Cost (Annual)", f"₹{econ.get('direct_medical_annual', 0):,.0f}"),
+            ("Direct Non-Medical Cost (Annual)", f"₹{econ.get('direct_non_medical_annual', 0):,.0f}"),
+            ("Indirect Cost (Annual)", f"₹{econ.get('indirect_annual', 0):,.0f}"),
+            ("Total Estimated Annual Cost", f"₹{econ.get('total_annual', 0):,.0f}"),
             ("Income Burden", f"{econ.get('income_burden_pct', 0):.1f}% of annual income"),
-            ("Financial Risk Category", econ.get("financial_risk_category", "â€”")),
+            ("Financial Risk Category", econ.get("financial_risk_category", "—")),
             ("Financial Burden Score", f"{econ.get('financial_burden_score', 0):.1f} / 100"),
         ]
         story.append(_kv_table(econ_rows))
@@ -282,7 +282,7 @@ def generate_report(report_data: dict) -> bytes:
     story.append(HRFlowable(width="100%", thickness=0.5, color=LIGHT))
     story.append(Spacer(1, 0.2*cm))
     disclaimer = (
-        "âš•ï¸ CLINICAL DISCLAIMER: This report is generated by RenalCare AI AI Platform for clinical decision support only. "
+        "⚕️ CLINICAL DISCLAIMER: This report is generated by RenalCare AI AI Platform for clinical decision support only. "
         "It does not constitute medical advice and does not replace the clinical judgment of qualified physicians, "
         "pharmacists, or other licensed healthcare professionals. All clinical decisions must be made by authorised "
         "healthcare providers based on a complete assessment of the individual patient. "
@@ -314,9 +314,9 @@ def _fallback_text_report(data: dict) -> bytes:
     """Plain text fallback when ReportLab is not installed."""
     lines = [
         "=" * 60,
-        "RenalCare AI â€” AI RENAL INTELLIGENCE REPORT",
+        "RenalCare AI — AI RENAL INTELLIGENCE REPORT",
         "=" * 60,
-        f"Patient: {data.get('patient_name', 'â€”')}",
+        f"Patient: {data.get('patient_name', '—')}",
         f"Date: {data.get('report_date', datetime.now().strftime('%d %B %Y'))}",
         "",
     ]
@@ -325,9 +325,9 @@ def _fallback_text_report(data: dict) -> bytes:
         lines += [
             "KIDNEY RISK ANALYSIS",
             "-" * 30,
-            f"Risk Category: {risk.get('risk_category', 'â€”')}",
-            f"Risk Score: {risk.get('risk_score', 'â€”')}/100",
-            f"CKD Stage: {risk.get('ckd_stage', 'â€”')}",
+            f"Risk Category: {risk.get('risk_category', '—')}",
+            f"Risk Score: {risk.get('risk_score', '—')}/100",
+            f"CKD Stage: {risk.get('ckd_stage', '—')}",
             "",
         ]
     lines.append("Generated by RenalCare AI AI Platform.")

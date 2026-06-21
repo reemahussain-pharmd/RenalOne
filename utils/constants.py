@@ -1,4 +1,4 @@
-﻿"""Shared constants for RenalCare AI."""
+"""Shared constants for RenalCare AI."""
 
 # CKD Stage definitions by eGFR
 CKD_STAGES = {
@@ -11,10 +11,10 @@ CKD_STAGES = {
 }
 
 RISK_LEVELS = {
-    "Low": {"color": "#27ae60", "bg": "#d5f5e3", "icon": "âœ…", "score_range": (0, 25)},
-    "Moderate": {"color": "#f39c12", "bg": "#fef9e7", "icon": "âš ï¸", "score_range": (25, 50)},
-    "High": {"color": "#e67e22", "bg": "#fdf2e9", "icon": "ðŸ”¶", "score_range": (50, 75)},
-    "Critical": {"color": "#e74c3c", "bg": "#fdedec", "icon": "ðŸš¨", "score_range": (75, 100)},
+    "Low": {"color": "#27ae60", "bg": "#d5f5e3", "icon": "✅", "score_range": (0, 25)},
+    "Moderate": {"color": "#f39c12", "bg": "#fef9e7", "icon": "⚠️", "score_range": (25, 50)},
+    "High": {"color": "#e67e22", "bg": "#fdf2e9", "icon": "🔶", "score_range": (50, 75)},
+    "Critical": {"color": "#e74c3c", "bg": "#fdedec", "icon": "🚨", "score_range": (75, 100)},
 }
 
 # Renal nutrition thresholds by CKD stage

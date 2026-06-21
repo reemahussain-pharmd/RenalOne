@@ -1,4 +1,4 @@
-﻿"""Kidney Risk Assessment Page â€” RenalCare AI."""
+"""Kidney Risk Assessment Page — RenalCare AI."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -13,7 +13,7 @@ def render():
     st.markdown("""
     <div style='background: linear-gradient(135deg, #1e3a5f, #2980b9);
                 border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>ðŸ«€ Kidney Risk Assessment</h2>
+        <h2 style='color:white; margin:0; font-size:1.5rem;'>🫀 Kidney Risk Assessment</h2>
         <p style='color:#bde0fe; margin:0.3rem 0 0 0; font-size:0.88rem;'>
             AI-powered CKD risk scoring based on clinical biomarkers and KDIGO guidelines
         </p>
@@ -29,7 +29,7 @@ def render():
 
     with st.form("risk_form"):
         # ---- Demographics ----
-        st.markdown("<div class='section-header'>ðŸ‘¤ Patient Demographics</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>👤 Patient Demographics</div>", unsafe_allow_html=True)
         c1, c2, c3 = st.columns(3)
         with c1:
             age = st.number_input("Age (years)*", min_value=18, max_value=100, value=55, step=1)
@@ -41,12 +41,12 @@ def render():
             bmi_calc = calculate_bmi(weight, height)
             bmi_cat, bmi_col = classify_bmi(bmi_calc)
             st.metric("Calculated BMI", f"{bmi_calc}", f"{bmi_cat}")
-            st.markdown(f"<span style='color:{bmi_col}; font-size:0.8rem;'>â—</span> {bmi_cat}", unsafe_allow_html=True)
+            st.markdown(f"<span style='color:{bmi_col}; font-size:0.8rem;'>●</span> {bmi_cat}", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---- Comorbidities ----
-        st.markdown("<div class='section-header'>ðŸ¥ Comorbidities & Risk Factors</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>🏥 Comorbidities & Risk Factors</div>", unsafe_allow_html=True)
         c4, c5 = st.columns(2)
         with c4:
             diabetes = st.checkbox("Diabetes Mellitus", value=True)
@@ -65,18 +65,18 @@ def render():
             diastolic_bp = st.number_input("Diastolic BP (mmHg)", min_value=40, max_value=150, value=90, step=1)
         with hba1c_c:
             hba1c = st.number_input("HbA1c (%)", min_value=4.0, max_value=20.0, value=8.2, step=0.1,
-                                    help="Glycated haemoglobin â€” leave at 0 if not diabetic or unavailable")
+                                    help="Glycated haemoglobin — leave at 0 if not diabetic or unavailable")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---- Lab Values ----
-        st.markdown("<div class='section-header'>ðŸ§ª Laboratory Values</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>🧪 Laboratory Values</div>", unsafe_allow_html=True)
         l1, l2, l3 = st.columns(3)
         with l1:
             creatinine = st.number_input("Serum Creatinine (mg/dL)*", min_value=0.3, max_value=20.0,
                                           value=2.1, step=0.1)
         with l2:
-            egfr = st.number_input("eGFR (mL/min/1.73mÂ²)*", min_value=1.0, max_value=120.0,
+            egfr = st.number_input("eGFR (mL/min/1.73m²)*", min_value=1.0, max_value=120.0,
                                     value=35.0, step=0.5,
                                     help="Use CKD-EPI 2021 equation. eGFR calculators available at mdcalc.com")
         with l3:
@@ -85,7 +85,7 @@ def render():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        submit = st.form_submit_button("ðŸ” Analyse Kidney Risk", use_container_width=True)
+        submit = st.form_submit_button("🔍 Analyse Kidney Risk", use_container_width=True)
 
     if submit:
         with st.spinner("Running clinical risk analysis..."):
@@ -105,12 +105,12 @@ def render():
 
         # ---- Results ----
         st.markdown("---")
-        st.markdown("## ðŸ“Š Risk Assessment Results")
+        st.markdown("## 📊 Risk Assessment Results")
 
         # Top metrics
         cat = result.risk_category
         badge_class = {"Low": "badge-low", "Moderate": "badge-mod", "High": "badge-high", "Critical": "badge-crit"}.get(cat, "badge-mod")
-        risk_icon = {"Low": "âœ…", "Moderate": "âš ï¸", "High": "ðŸ”¶", "Critical": "ðŸš¨"}.get(cat, "âš ï¸")
+        risk_icon = {"Low": "✅", "Moderate": "⚠️", "High": "🔶", "Critical": "🚨"}.get(cat, "⚠️")
 
         m1, m2, m3, m4 = st.columns(4)
         with m1:
@@ -164,13 +164,13 @@ def render():
                 CKD Classification
             </div>
             <div style='font-size:1.5rem; font-weight:700; color:{stage_color};'>{result.ckd_stage}</div>
-            <div style='font-size:0.85rem; color:#4a5568;'>eGFR: {egfr:.1f} mL/min/1.73mÂ² â€” {result.egfr_category}</div>
+            <div style='font-size:0.85rem; color:#4a5568;'>eGFR: {egfr:.1f} mL/min/1.73m² — {result.egfr_category}</div>
         </div>
         """, unsafe_allow_html=True)
 
         # Clinical summary
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### ðŸ“ Clinical Summary")
+        st.markdown("### 📝 Clinical Summary")
         st.markdown(f"""
         <div style='background:white; border-radius:10px; padding:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
                     border-left:4px solid {stage_color};'>
@@ -181,7 +181,7 @@ def render():
         # Contributing factors
         if result.contributing_factors:
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### âš¡ Contributing Risk Factors")
+            st.markdown("### ⚡ Contributing Risk Factors")
             st.plotly_chart(risk_factor_bar(result.contributing_factors), use_container_width=True)
 
             for factor in result.contributing_factors:
@@ -193,7 +193,7 @@ def render():
                             display:flex; align-items:center; gap:1rem;'>
                     <div style='flex:1;'>
                         <span style='font-weight:600; color:#1e3a5f;'>{factor["factor"]}</span>
-                        <span style='color:#718096; font-size:0.85rem; margin-left:0.5rem;'>â€” {factor.get("value","")}</span>
+                        <span style='color:#718096; font-size:0.85rem; margin-left:0.5rem;'>— {factor.get("value","")}</span>
                     </div>
                     <span style='background:{impact_color}22; color:{impact_color}; padding:2px 10px;
                                  border-radius:12px; font-size:0.78rem; font-weight:600;'>{impact}</span>
@@ -205,11 +205,11 @@ def render():
         # Recommendations
         if result.recommendations:
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### ðŸŽ¯ Clinical Recommendations")
+            st.markdown("### 🎯 Clinical Recommendations")
             st.markdown(f"""
             <div style='background:#fffaf0; border:1px solid #fbd38d; border-radius:10px; padding:1rem 1.2rem;'>
                 <div style='font-weight:600; color:#d69e2e; margin-bottom:0.5rem;'>
-                    âš ï¸ {result.monitoring_priority}
+                    ⚠️ {result.monitoring_priority}
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -226,7 +226,7 @@ def render():
 
         # eGFR trend
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### ðŸ“ˆ eGFR Reference Trend")
+        st.markdown("### 📈 eGFR Reference Trend")
         st.plotly_chart(egfr_trend_placeholder(), use_container_width=True)
         st.caption("Sample eGFR trend for reference. Connect to longitudinal patient data for personalised trend analysis.")
 
@@ -234,11 +234,11 @@ def render():
         st.markdown("---")
         st.markdown("""
         <div class='success-box'>
-            âœ… Risk assessment complete. Navigate to <b>Report Generator</b> to include this analysis in a full clinical PDF report.
+            ✅ Risk assessment complete. Navigate to <b>Report Generator</b> to include this analysis in a full clinical PDF report.
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("ðŸ“‹ Generate Clinical Report â†’", use_container_width=True):
+        if st.button("📋 Generate Clinical Report →", use_container_width=True):
             st.session_state.current_page = "Report"
             st.rerun()
     else:
@@ -247,7 +247,7 @@ def render():
         st.markdown("""
         <div style='background:white; border-radius:12px; padding:3rem; text-align:center;
                     box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-            <div style='font-size:3rem; margin-bottom:1rem;'>ðŸ«€</div>
+            <div style='font-size:3rem; margin-bottom:1rem;'>🫀</div>
             <h3 style='color:#1e3a5f;'>Complete the Assessment Form</h3>
             <p style='color:#718096; font-size:0.9rem;'>
                 Fill in the clinical parameters above and click <b>Analyse Kidney Risk</b>

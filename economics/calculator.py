@@ -1,5 +1,5 @@
-﻿"""
-Pharmacoeconomic Intelligence â€” RenalCare AI
+"""
+Pharmacoeconomic Intelligence — RenalCare AI
 Economic burden calculation inspired by published hemodialysis research.
 Methodology based on: "Economic burden and quality of life of maintenance
 hemodialysis patients in a rural area of South India" (published study).
@@ -80,9 +80,9 @@ def _ai_economic_narrative(inp: EconomicInput, breakdown: dict) -> str:
     prompt = f"""You are a Health Economist specialising in chronic kidney disease burden analysis.
 
 Patient Economic Profile:
-- Monthly Income: â‚¹{inp.patient_monthly_income:,.0f}
-- Dialysis: {inp.dialysis_sessions_per_week} sessions/week at â‚¹{inp.cost_per_dialysis_session:,.0f}/session
-- Total Annual Healthcare Cost: â‚¹{breakdown['total_annual']:,.0f}
+- Monthly Income: ₹{inp.patient_monthly_income:,.0f}
+- Dialysis: {inp.dialysis_sessions_per_week} sessions/week at ₹{inp.cost_per_dialysis_session:,.0f}/session
+- Total Annual Healthcare Cost: ₹{breakdown['total_annual']:,.0f}
 - Income Burden: {breakdown['income_burden_pct']:.1f}% of annual income
 - Financial Risk: {breakdown['risk_category']}
 
@@ -111,7 +111,7 @@ Keep it professional and data-driven."""
         who_note = "This remains below catastrophic expenditure thresholds, though monitoring is advisable."
 
     return (
-        f"The estimated annual healthcare burden of â‚¹{annual:,.0f} represents {pct:.1f}% of this patient's annual income â€” "
+        f"The estimated annual healthcare burden of ₹{annual:,.0f} represents {pct:.1f}% of this patient's annual income — "
         f"classified as **{qualifier}** financial risk. {who_note} "
         f"Dialysis dependency creates a sustained economic burden affecting both patients and caregivers, "
         f"consistent with findings in published rural Indian hemodialysis economic burden studies. "
@@ -171,10 +171,10 @@ def calculate_economic_burden(inp: EconomicInput) -> CostBreakdown:
     ], key=lambda x: x["monthly"], reverse=True)
 
     econ_summary = (
-        f"Estimated total annual cost: â‚¹{total_annual:,.0f} | "
-        f"Direct medical: â‚¹{direct_medical_annual:,.0f} | "
-        f"Non-medical: â‚¹{direct_non_medical_annual:,.0f} | "
-        f"Indirect: â‚¹{indirect_annual:,.0f} | "
+        f"Estimated total annual cost: ₹{total_annual:,.0f} | "
+        f"Direct medical: ₹{direct_medical_annual:,.0f} | "
+        f"Non-medical: ₹{direct_non_medical_annual:,.0f} | "
+        f"Indirect: ₹{indirect_annual:,.0f} | "
         f"Income burden: {income_burden_pct:.1f}%"
     )
 

@@ -1,4 +1,4 @@
-﻿"""Pharmacoeconomic Intelligence Page â€” RenalCare AI."""
+"""Pharmacoeconomic Intelligence Page — RenalCare AI."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -14,8 +14,8 @@ def _cost_metric(label: str, monthly: float, annual: float, color: str = "#2980b
     <div style='background:white; border-radius:10px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
                 border-left:4px solid {color};'>
         <div style='font-size:0.78rem; color:#718096; font-weight:600; text-transform:uppercase;'>{label}</div>
-        <div style='font-size:1.4rem; font-weight:700; color:{color};'>â‚¹{annual:,.0f}</div>
-        <div style='font-size:0.8rem; color:#a0aec0;'>â‚¹{monthly:,.0f}/month</div>
+        <div style='font-size:1.4rem; font-weight:700; color:{color};'>₹{annual:,.0f}</div>
+        <div style='font-size:0.8rem; color:#a0aec0;'>₹{monthly:,.0f}/month</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -24,16 +24,16 @@ def render():
     st.markdown("""
     <div style='background: linear-gradient(135deg, #5d3a00, #e67e22);
                 border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>ðŸ’° Pharmacoeconomic Intelligence</h2>
+        <h2 style='color:white; margin:0; font-size:1.5rem;'>💰 Pharmacoeconomic Intelligence</h2>
         <p style='color:#fde8c8; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            Economic burden analysis Â· Based on published hemodialysis pharmacoeconomic research
+            Economic burden analysis · Based on published hemodialysis pharmacoeconomic research
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class='info-box'>
-        <b>ðŸ“š Research Foundation:</b> This module is inspired by published pharmacoeconomic research on
+        <b>📚 Research Foundation:</b> This module is inspired by published pharmacoeconomic research on
         economic burden and quality of life of maintenance hemodialysis patients. It estimates direct medical,
         direct non-medical, and indirect costs to quantify the total financial burden on patients and caregivers.
     </div>
@@ -42,65 +42,65 @@ def render():
     with st.form("econ_form"):
 
         # ---- Patient income ----
-        st.markdown("<div class='section-header'>ðŸ‘¤ Patient Financial Context</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>👤 Patient Financial Context</div>", unsafe_allow_html=True)
         fi1, fi2 = st.columns(2)
         with fi1:
-            monthly_income = st.number_input("Patient Monthly Income (â‚¹)", min_value=0.0, max_value=500000.0,
+            monthly_income = st.number_input("Patient Monthly Income (₹)", min_value=0.0, max_value=500000.0,
                                               value=12000.0, step=500.0,
                                               help="Used to calculate income burden percentage")
         with fi2:
-            currency = st.selectbox("Currency", ["INR (â‚¹)", "USD ($)"], index=0)
+            currency = st.selectbox("Currency", ["INR (₹)", "USD ($)"], index=0)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---- Dialysis ----
-        st.markdown("<div class='section-header'>ðŸ¥ Direct Medical Costs (Monthly)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>🏥 Direct Medical Costs (Monthly)</div>", unsafe_allow_html=True)
         dm1, dm2 = st.columns(2)
         with dm1:
             dial_freq = st.selectbox("Dialysis Frequency", ["3 sessions/week (standard)", "2 sessions/week", "4 sessions/week"], index=0)
             dial_sessions = {"3 sessions/week (standard)": 3, "2 sessions/week": 2, "4 sessions/week": 4}[dial_freq]
-            cost_per_session = st.number_input("Cost per Dialysis Session (â‚¹)", min_value=0.0, max_value=20000.0,
+            cost_per_session = st.number_input("Cost per Dialysis Session (₹)", min_value=0.0, max_value=20000.0,
                                                value=1500.0, step=100.0)
         with dm2:
-            med_cost = st.number_input("Monthly Medication Cost (â‚¹)", min_value=0.0, value=3500.0, step=100.0)
-            lab_cost = st.number_input("Monthly Laboratory Cost (â‚¹)", min_value=0.0, value=1200.0, step=100.0)
+            med_cost = st.number_input("Monthly Medication Cost (₹)", min_value=0.0, value=3500.0, step=100.0)
+            lab_cost = st.number_input("Monthly Laboratory Cost (₹)", min_value=0.0, value=1200.0, step=100.0)
 
         dm3, dm4 = st.columns(2)
         with dm3:
-            specialist_cost = st.number_input("Specialist Visit Cost/month (â‚¹)", min_value=0.0, value=600.0, step=100.0)
+            specialist_cost = st.number_input("Specialist Visit Cost/month (₹)", min_value=0.0, value=600.0, step=100.0)
         with dm4:
-            hospitalisation = st.number_input("Annual Hospitalisation Cost (â‚¹)", min_value=0.0, value=25000.0, step=1000.0)
+            hospitalisation = st.number_input("Annual Hospitalisation Cost (₹)", min_value=0.0, value=25000.0, step=1000.0)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---- Non-medical ----
-        st.markdown("<div class='section-header'>ðŸš— Direct Non-Medical Costs (Monthly)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>🚗 Direct Non-Medical Costs (Monthly)</div>", unsafe_allow_html=True)
         nm1, nm2, nm3 = st.columns(3)
         with nm1:
-            transport_per_session = st.number_input("Transport Cost per Dialysis Session (â‚¹)", min_value=0.0, value=180.0, step=10.0)
+            transport_per_session = st.number_input("Transport Cost per Dialysis Session (₹)", min_value=0.0, value=180.0, step=10.0)
         with nm2:
-            meals_cost = st.number_input("Meals During Dialysis/month (â‚¹)", min_value=0.0, value=450.0, step=50.0)
+            meals_cost = st.number_input("Meals During Dialysis/month (₹)", min_value=0.0, value=450.0, step=50.0)
         with nm3:
-            accommodation = st.number_input("Accommodation/month (â‚¹)", min_value=0.0, value=0.0, step=100.0)
+            accommodation = st.number_input("Accommodation/month (₹)", min_value=0.0, value=0.0, step=100.0)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ---- Indirect ----
-        st.markdown("<div class='section-header'>ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Indirect Costs (Monthly)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='section-header'>👨‍👩‍👧 Indirect Costs (Monthly)</div>", unsafe_allow_html=True)
         ic1, ic2, ic3 = st.columns(3)
         with ic1:
-            patient_wage_loss = st.number_input("Patient Wage Loss/month (â‚¹)", min_value=0.0, value=8000.0, step=500.0,
+            patient_wage_loss = st.number_input("Patient Wage Loss/month (₹)", min_value=0.0, value=8000.0, step=500.0,
                                                  help="Income lost due to inability to work")
         with ic2:
-            caregiver_wage_loss = st.number_input("Caregiver Wage Loss/month (â‚¹)", min_value=0.0, value=4500.0, step=500.0)
+            caregiver_wage_loss = st.number_input("Caregiver Wage Loss/month (₹)", min_value=0.0, value=4500.0, step=500.0)
         with ic3:
             caregiver_hours = st.number_input("Caregiver Hours/week", min_value=0.0, max_value=168.0, value=24.0, step=1.0)
 
-        informal_rate = st.slider("Informal Care Hourly Rate (â‚¹)", min_value=20, max_value=500, value=60, step=10,
+        informal_rate = st.slider("Informal Care Hourly Rate (₹)", min_value=20, max_value=500, value=60, step=10,
                                    help="Estimated cost of informal caregiver time")
 
         st.markdown("<br>", unsafe_allow_html=True)
-        submit = st.form_submit_button("ðŸ“Š Calculate Economic Burden", use_container_width=True)
+        submit = st.form_submit_button("📊 Calculate Economic Burden", use_container_width=True)
 
     if submit:
         with st.spinner("Running pharmacoeconomic analysis..."):
@@ -126,7 +126,7 @@ def render():
         st.session_state["economic_input"] = inp
 
         st.markdown("---")
-        st.markdown("## ðŸ“Š Economic Burden Analysis")
+        st.markdown("## 📊 Economic Burden Analysis")
 
         # Risk banner
         risk_configs = {
@@ -137,8 +137,8 @@ def render():
         }
         rc = result.financial_risk_category
         fc, fbg = risk_configs.get(rc, ("#718096", "#f8f9fa"))
-        risk_icons = {"Low": "âœ…", "Moderate": "âš ï¸", "High": "ðŸ”¶", "Catastrophic": "ðŸš¨"}
-        ri = risk_icons.get(rc, "âš ï¸")
+        risk_icons = {"Low": "✅", "Moderate": "⚠️", "High": "🔶", "Catastrophic": "🚨"}
+        ri = risk_icons.get(rc, "⚠️")
 
         st.markdown(f"""
         <div style='background:{fbg}; border:2px solid {fc}; border-radius:10px; padding:1.2rem 1.5rem; margin-bottom:1rem;'>
@@ -150,7 +150,7 @@ def render():
                     </div>
                 </div>
                 <div style='text-align:right;'>
-                    <div style='font-size:2rem; font-weight:800; color:{fc};'>â‚¹{result.total_annual:,.0f}</div>
+                    <div style='font-size:2rem; font-weight:800; color:{fc};'>₹{result.total_annual:,.0f}</div>
                     <div style='font-size:0.8rem; color:#718096;'>Estimated Annual Cost</div>
                 </div>
             </div>
@@ -162,7 +162,7 @@ def render():
             threshold_text = "WHO threshold for catastrophic health expenditure (10% of income)" if result.income_burden_pct < 40 else "WHO catastrophic expenditure threshold (40% of non-subsistence spending)"
             st.markdown(f"""
             <div class='danger-box' style='font-size:0.85rem;'>
-                ðŸš¨ <b>Catastrophic Health Expenditure:</b> Healthcare costs exceed {threshold_text}.
+                🚨 <b>Catastrophic Health Expenditure:</b> Healthcare costs exceed {threshold_text}.
                 Financial counselling and government health scheme enrolment are strongly recommended.
             </div>
             """, unsafe_allow_html=True)
@@ -214,14 +214,14 @@ def render():
             st.plotly_chart(fig, use_container_width=True)
 
         # Cost drivers table
-        st.markdown("### ðŸ“‹ Cost Drivers Breakdown")
+        st.markdown("### 📋 Cost Drivers Breakdown")
         cost_table_html = """
         <div style='background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
         <table style='width:100%; border-collapse:collapse; font-size:0.88rem;'>
             <tr style='background:#1e3a5f; color:white;'>
                 <th style='padding:10px 14px; text-align:left;'>Cost Driver</th>
-                <th style='padding:10px 14px; text-align:right;'>Monthly (â‚¹)</th>
-                <th style='padding:10px 14px; text-align:right;'>Annual (â‚¹)</th>
+                <th style='padding:10px 14px; text-align:right;'>Monthly (₹)</th>
+                <th style='padding:10px 14px; text-align:right;'>Annual (₹)</th>
                 <th style='padding:10px 14px; text-align:right;'>Share</th>
             </tr>
         """
@@ -231,8 +231,8 @@ def render():
             cost_table_html += f"""
             <tr style='background:{row_bg};'>
                 <td style='padding:8px 14px; font-weight:500; color:#1e3a5f;'>{driver["name"]}</td>
-                <td style='padding:8px 14px; text-align:right; color:#4a5568;'>â‚¹{driver["monthly"]:,}</td>
-                <td style='padding:8px 14px; text-align:right; font-weight:600; color:#2980b9;'>â‚¹{driver["annual"]:,}</td>
+                <td style='padding:8px 14px; text-align:right; color:#4a5568;'>₹{driver["monthly"]:,}</td>
+                <td style='padding:8px 14px; text-align:right; font-weight:600; color:#2980b9;'>₹{driver["annual"]:,}</td>
                 <td style='padding:8px 14px; text-align:right;'>
                     <div style='display:flex; align-items:center; gap:6px; justify-content:flex-end;'>
                         <div style='background:#e2e8f0; border-radius:4px; width:60px; height:6px;'>
@@ -246,8 +246,8 @@ def render():
         cost_table_html += f"""
             <tr style='background:#ebf8ff; font-weight:700;'>
                 <td style='padding:10px 14px; color:#1e3a5f;'>TOTAL</td>
-                <td style='padding:10px 14px; text-align:right; color:#1e3a5f;'>â‚¹{result.total_monthly:,.0f}</td>
-                <td style='padding:10px 14px; text-align:right; color:#e74c3c;'>â‚¹{result.total_annual:,.0f}</td>
+                <td style='padding:10px 14px; text-align:right; color:#1e3a5f;'>₹{result.total_monthly:,.0f}</td>
+                <td style='padding:10px 14px; text-align:right; color:#e74c3c;'>₹{result.total_annual:,.0f}</td>
                 <td style='padding:10px 14px; text-align:right; color:#e74c3c;'>100%</td>
             </tr>
         </table></div>
@@ -257,7 +257,7 @@ def render():
         # AI narrative
         if result.ai_narrative:
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### ðŸ“ Economic Burden Assessment")
+            st.markdown("### 📝 Economic Burden Assessment")
             st.markdown(f"""
             <div style='background:white; border-radius:10px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
                         border-left:4px solid #e67e22;'>
@@ -266,7 +266,7 @@ def render():
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("---")
-        if st.button("ðŸ“‹ Add to Clinical Report â†’", use_container_width=True):
+        if st.button("📋 Add to Clinical Report →", use_container_width=True):
             st.session_state.current_page = "Report"
             st.rerun()
     else:
@@ -274,7 +274,7 @@ def render():
         st.markdown("""
         <div style='background:white; border-radius:12px; padding:3rem; text-align:center;
                     box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-            <div style='font-size:3rem; margin-bottom:1rem;'>ðŸ’°</div>
+            <div style='font-size:3rem; margin-bottom:1rem;'>💰</div>
             <h3 style='color:#1e3a5f;'>Hemodialysis Economic Burden Calculator</h3>
             <p style='color:#718096; font-size:0.9rem;'>
                 Enter cost parameters above to estimate the total economic burden

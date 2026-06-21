@@ -1,5 +1,5 @@
-﻿"""
-RenalCare AI â€” Main Application Entry Point
+"""
+RenalCare AI — Main Application Entry Point
 AI-Powered Kidney Disease Intelligence Platform
 """
 import sys
@@ -10,11 +10,11 @@ import streamlit as st
 
 st.set_page_config(
     page_title="RenalCare AI",
-    page_icon="ðŸ«€",
+    page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        "About": "RenalCare AI v1.0 â€” AI-Powered Kidney Disease Intelligence Platform",
+        "About": "RenalCare AI v1.0 — AI-Powered Kidney Disease Intelligence Platform",
         "Report a bug": None,
         "Get Help": None,
     },
@@ -23,19 +23,19 @@ st.set_page_config(
 # ---- Global CSS ----
 st.markdown("""
 <style>
-/* â”€â”€ Import font â”€â”€ */
+/* ── Import font ── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-/* â”€â”€ Hide default Streamlit chrome â”€â”€ */
+/* ── Hide default Streamlit chrome ── */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* â”€â”€ Sidebar â”€â”€ */
+/* ── Sidebar ── */
 [data-testid="stSidebar"] {
     background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 60%, #1a365d 100%);
     border-right: none;
@@ -48,14 +48,14 @@ header {visibility: hidden;}
     font-weight: 600;
 }
 
-/* â”€â”€ Main background â”€â”€ */
+/* ── Main background ── */
 .main .block-container {
     background-color: #f7fafc;
     padding-top: 1.5rem;
     padding-bottom: 2rem;
 }
 
-/* â”€â”€ Metric cards â”€â”€ */
+/* ── Metric cards ── */
 .metric-card {
     background: white;
     border-radius: 12px;
@@ -78,7 +78,7 @@ header {visibility: hidden;}
     letter-spacing: 0.05em;
 }
 
-/* â”€â”€ Section headers â”€â”€ */
+/* ── Section headers ── */
 .section-header {
     background: linear-gradient(135deg, #1e3a5f 0%, #2980b9 100%);
     color: white !important;
@@ -89,13 +89,13 @@ header {visibility: hidden;}
     margin-bottom: 1rem;
 }
 
-/* â”€â”€ Risk badges â”€â”€ */
+/* ── Risk badges ── */
 .badge-low    { background:#d5f5e3; color:#1e8449; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.85rem; }
 .badge-mod    { background:#fef9e7; color:#d35400; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.85rem; }
 .badge-high   { background:#fdf2e9; color:#e74c3c; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.85rem; }
 .badge-crit   { background:#fdedec; color:#c0392b; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.85rem; }
 
-/* â”€â”€ Info box â”€â”€ */
+/* ── Info box ── */
 .info-box {
     background: #ebf8ff;
     border: 1px solid #bee3f8;
@@ -133,21 +133,21 @@ header {visibility: hidden;}
     font-size: 0.88rem;
 }
 
-/* â”€â”€ Nutrition suitability â”€â”€ */
+/* ── Nutrition suitability ── */
 .food-safe   { background:#f0fff4; border:2px solid #38a169; border-radius:10px; padding:1rem; }
 .food-caution{ background:#fffff0; border:2px solid #d69e2e; border-radius:10px; padding:1rem; }
 .food-avoid  { background:#fff5f5; border:2px solid #e53e3e; border-radius:10px; padding:1rem; }
 
-/* â”€â”€ Sidebar nav pills â”€â”€ */
+/* ── Sidebar nav pills ── */
 div[data-testid="stSidebarNav"] {display: none;}
 
-/* â”€â”€ Tables â”€â”€ */
+/* ── Tables ── */
 .dataframe { font-size: 0.85rem !important; }
 
-/* â”€â”€ Progress bar colour â”€â”€ */
+/* ── Progress bar colour ── */
 .stProgress > div > div > div > div { background: linear-gradient(90deg, #2980b9, #16a085); }
 
-/* â”€â”€ Buttons â”€â”€ */
+/* ── Buttons ── */
 .stButton > button {
     background: linear-gradient(135deg, #1e3a5f, #2980b9);
     color: white;
@@ -169,11 +169,11 @@ div[data-testid="stSidebarNav"] {display: none;}
 with st.sidebar:
     st.markdown("""
     <div style='text-align:center; padding: 1.5rem 0 1rem 0;'>
-        <div style='font-size:2.5rem;'>ðŸ«€</div>
+        <div style='font-size:2.5rem;'>🫀</div>
         <div style='font-size:1.3rem; font-weight:700; color:white; letter-spacing:0.05em;'>RenalCare AI</div>
         <div style='font-size:0.72rem; color:#90cdf4; margin-top:4px;'>AI-Powered Kidney Intelligence</div>
         <div style='background:rgba(255,255,255,0.1); border-radius:6px; padding:3px 10px; margin-top:8px; display:inline-block;'>
-            <span style='font-size:0.7rem; color:#a0d8ef;'>v1.0 â€” Clinical Preview</span>
+            <span style='font-size:0.7rem; color:#a0d8ef;'>v1.0 — Clinical Preview</span>
         </div>
     </div>
     <hr style='border-color:rgba(255,255,255,0.15); margin: 0.5rem 0 1rem 0;'>
@@ -182,13 +182,13 @@ with st.sidebar:
     st.markdown("<div style='font-size:0.7rem; color:#90cdf4; font-weight:600; letter-spacing:0.1em; padding:0 0.5rem 0.3rem;'>NAVIGATION</div>", unsafe_allow_html=True)
 
     pages = {
-        "ðŸ   Dashboard": "Home",
-        "ðŸ«€  Kidney Risk Assessment": "Risk",
-        "ðŸ”¬  Clinical Evidence": "Evidence",
-        "ðŸ’Š  Medication Intelligence": "Medication",
-        "ðŸ¥—  Nutrition Intelligence": "Nutrition",
-        "ðŸ’°  Pharmacoeconomics": "Economics",
-        "ðŸ“‹  Report Generator": "Report",
+        "🏠  Dashboard": "Home",
+        "🫀  Kidney Risk Assessment": "Risk",
+        "🔬  Clinical Evidence": "Evidence",
+        "💊  Medication Intelligence": "Medication",
+        "🥗  Nutrition Intelligence": "Nutrition",
+        "💰  Pharmacoeconomics": "Economics",
+        "📋  Report Generator": "Report",
     }
 
     if "current_page" not in st.session_state:
@@ -205,16 +205,16 @@ with st.sidebar:
     <div style='padding: 0 0.5rem;'>
         <div style='font-size:0.7rem; color:#90cdf4; font-weight:600; letter-spacing:0.1em; margin-bottom:0.5rem;'>FUTURE MODULES</div>
         <div style='font-size:0.78rem; color:rgba(255,255,255,0.4); line-height:1.8;'>
-            ðŸ”® CKD Progression AI <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V2</span><br>
-            ðŸ“Š Adherence Intelligence <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V2</span><br>
-            ðŸ§¬ Kidney Digital Twin <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span><br>
-            ðŸŒ Population Health <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span><br>
-            ðŸ¥ Hospital Integration <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span>
+            🔮 CKD Progression AI <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V2</span><br>
+            📊 Adherence Intelligence <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V2</span><br>
+            🧬 Kidney Digital Twin <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span><br>
+            🌍 Population Health <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span><br>
+            🏥 Hospital Integration <span style='font-size:0.65rem; background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px;'>V3</span>
         </div>
     </div>
     <hr style='border-color:rgba(255,255,255,0.15); margin: 1rem 0 0.5rem 0;'>
     <div style='text-align:center; font-size:0.68rem; color:rgba(255,255,255,0.3);'>
-        Â© 2025 RenalCare AI<br>Clinical Decision Support Only
+        © 2025 RenalCare AI<br>Clinical Decision Support Only
     </div>
     """, unsafe_allow_html=True)
 
