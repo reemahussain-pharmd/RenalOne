@@ -150,6 +150,45 @@ def render():
 
     sh("<div style='margin-top:1.8rem;'></div>")
 
+    # ── Clinical Workflow Section ──────────────────────────────────────────
+    sh("""
+    <div style="margin-bottom:1.5rem;">
+        <div style="font-size:1.05rem;font-weight:800;color:#0F172A;margin-bottom:0.4rem;">&#x1f3c3; Clinical Workflow</div>
+        <div style="font-size:0.82rem;color:#64748B;margin-bottom:1rem;">Follow this five-step pathway for a complete patient renal care assessment</div>
+        <div style="display:flex;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
+            <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#FEE2E2,#FFF);border:1px solid #FCA5A5;border-radius:12px;padding:0.8rem 0.6rem;text-align:center;">
+                <div style="font-size:1.4rem;margin-bottom:4px;">&#x2764;&#xfe0f;</div>
+                <div style="font-size:0.65rem;font-weight:800;color:#991B1B;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Step 1</div>
+                <div style="font-size:0.78rem;font-weight:700;color:#0F172A;">Risk Assessment</div>
+            </div>
+            <div style="color:#CBD5E1;font-size:1.2rem;padding:0 4px;">&#x203a;</div>
+            <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#EEF2FF,#FFF);border:1px solid #A5B4FC;border-radius:12px;padding:0.8rem 0.6rem;text-align:center;">
+                <div style="font-size:1.4rem;margin-bottom:4px;">&#x1f48a;</div>
+                <div style="font-size:0.65rem;font-weight:800;color:#3730A3;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Step 2</div>
+                <div style="font-size:0.78rem;font-weight:700;color:#0F172A;">Medication Review</div>
+            </div>
+            <div style="color:#CBD5E1;font-size:1.2rem;padding:0 4px;">&#x203a;</div>
+            <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#D1FAE5,#FFF);border:1px solid #6EE7B7;border-radius:12px;padding:0.8rem 0.6rem;text-align:center;">
+                <div style="font-size:1.4rem;margin-bottom:4px;">&#x1f966;</div>
+                <div style="font-size:0.65rem;font-weight:800;color:#065F46;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Step 3</div>
+                <div style="font-size:0.78rem;font-weight:700;color:#0F172A;">Nutrition Review</div>
+            </div>
+            <div style="color:#CBD5E1;font-size:1.2rem;padding:0 4px;">&#x203a;</div>
+            <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#FEF3C7,#FFF);border:1px solid #FCD34D;border-radius:12px;padding:0.8rem 0.6rem;text-align:center;">
+                <div style="font-size:1.4rem;margin-bottom:4px;">&#x1f4ca;</div>
+                <div style="font-size:0.65rem;font-weight:800;color:#92400E;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Step 4</div>
+                <div style="font-size:0.78rem;font-weight:700;color:#0F172A;">Economic Analysis</div>
+            </div>
+            <div style="color:#CBD5E1;font-size:1.2rem;padding:0 4px;">&#x203a;</div>
+            <div style="flex:1;min-width:100px;background:linear-gradient(135deg,#CCFBF1,#FFF);border:1px solid #5EEAD4;border-radius:12px;padding:0.8rem 0.6rem;text-align:center;">
+                <div style="font-size:1.4rem;margin-bottom:4px;">&#x1f4c4;</div>
+                <div style="font-size:0.65rem;font-weight:800;color:#0F766E;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px;">Step 5</div>
+                <div style="font-size:0.78rem;font-weight:700;color:#0F172A;">Clinical Report</div>
+            </div>
+        </div>
+    </div>
+    """)
+
     # ── Two-column info row ────────────────────────────────────────────────
     left, right = st.columns([1.2, 1])
 
@@ -222,6 +261,45 @@ def render():
             </div>
             """
         sh(badges_html + "</div></div>")
+
+    sh("<div style='margin-top:1.5rem;'></div>")
+
+    # ── Platform Differentiators ───────────────────────────────────────────
+    sh("""
+    <div style="margin-bottom:0.6rem;">
+        <div style="font-size:1.05rem;font-weight:800;color:#0F172A;margin-bottom:0.3rem;">&#x2b50; What Makes RenalCare AI Different</div>
+        <div style="font-size:0.82rem;color:#64748B;margin-bottom:0.9rem;">Built by a PharmD researcher — clinical intelligence at every layer</div>
+    </div>
+    """)
+
+    diff_cols = st.columns(3)
+    differentiators = [
+        ("#6366F1","#EEF2FF","&#x1f48a;","Clinical Pharmacy Intelligence","Nephrotoxicity screening, renal dose adjustment, and ADR monitoring powered by PharmD expertise — not generic drug databases."),
+        ("#14B8A6","#CCFBF1","&#x1f50d;","KDIGO Evidence Engine","RAG-powered semantic search across 13+ KDIGO clinical articles. Every recommendation is traceable to a guideline."),
+        ("#EF4444","#FEE2E2","&#x2764;&#xfe0f;","Explainable Risk Scoring","Risk scores are broken down by contributing factor, weighted by clinical evidence, and mapped to the KDIGO G×A heat map."),
+        ("#10B981","#D1FAE5","&#x1f966;","Renal Nutrition AI","37+ food items analyzed for K⁺, PO₄, Na⁺, protein — with recommendations calibrated to CKD stage and dialysis status."),
+        ("#F59E0B","#FEF3C7","&#x1f4ca;","Pharmacoeconomic Analysis","Cost-of-illness model adapted from peer-reviewed hemodialysis burden research. WHO catastrophic expenditure threshold integrated."),
+        ("#3B82F6","#EFF6FF","&#x1f4c4;","AI Clinical Reporting","Professional PDF reports aggregating all module outputs — designed to be placed in a patient clinical record."),
+    ]
+    for i, (color, bg, icon, title, desc) in enumerate(differentiators):
+        with diff_cols[i % 3]:
+            sh(f'<div style="background:{bg};border:1px solid {color}30;border-radius:12px;padding:1rem;margin-bottom:0.8rem;"><div style="font-size:1.3rem;margin-bottom:6px;">{icon}</div><div style="font-size:0.85rem;font-weight:800;color:#0F172A;margin-bottom:4px;">{title}</div><div style="font-size:0.78rem;color:#475569;line-height:1.55;">{desc}</div></div>')
+
+    sh("<div style='margin-top:1.2rem;'></div>")
+
+    # ── Why RenalCare AI Exists ────────────────────────────────────────────
+    sh("""
+    <div class="rc-card" style="margin-bottom:1.2rem;">
+        <div style="font-size:0.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">&#x1f4d6; Why RenalCare AI Exists</div>
+        <div style="font-size:0.95rem;font-weight:800;color:#0F172A;margin-bottom:0.8rem;">CKD is a silent, progressive, and costly disease. Current tools don't connect the clinical, nutritional, pharmacological, and economic dimensions.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            <div style="background:#FEF2F2;border-left:3px solid #EF4444;padding:0.6rem 0.8rem;border-radius:0 8px 8px 0;"><div style="font-size:0.8rem;font-weight:700;color:#991B1B;">850M+</div><div style="font-size:0.75rem;color:#374151;">people affected by CKD globally — 90% undiagnosed</div></div>
+            <div style="background:#FFF7ED;border-left:3px solid #F59E0B;padding:0.6rem 0.8rem;border-radius:0 8px 8px 0;"><div style="font-size:0.8rem;font-weight:700;color:#92400E;">&#x20b9;1.8L/yr</div><div style="font-size:0.75rem;color:#374151;">average hemodialysis cost in India — catastrophic for 70% of patients</div></div>
+            <div style="background:#F0FDF4;border-left:3px solid #10B981;padding:0.6rem 0.8rem;border-radius:0 8px 8px 0;"><div style="font-size:0.8rem;font-weight:700;color:#065F46;">40%</div><div style="font-size:0.75rem;color:#374151;">of CKD medication errors are nephrotoxin-related and preventable</div></div>
+            <div style="background:#EFF6FF;border-left:3px solid #3B82F6;padding:0.6rem 0.8rem;border-radius:0 8px 8px 0;"><div style="font-size:0.8rem;font-weight:700;color:#1D4ED8;">Published</div><div style="font-size:0.75rem;color:#374151;">pharmacoeconomic model from peer-reviewed hemodialysis burden research</div></div>
+        </div>
+    </div>
+    """)
 
     # ── Disclaimer ─────────────────────────────────────────────────────────
     sh("""

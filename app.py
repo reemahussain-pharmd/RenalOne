@@ -77,6 +77,30 @@ with st.sidebar:
         if st.button(f"{icon}  {label}", key=f"nav_{key}", use_container_width=True):
             go(key)
 
+    # ── Patient Context Panel ──────────────────────────────────────────────
+    ctx = st.session_state.get("patient_context")
+    if ctx:
+        stage   = ctx.get("ckd_stage", "—")
+        risk_lv = ctx.get("risk_category", "—")
+        egfr_v  = ctx.get("egfr", "—")
+        ts      = ctx.get("last_assessed", "—")
+        RISK_DOT = {"Low":"#10B981","Moderate":"#F59E0B","High":"#EF4444","Critical":"#7C3AED"}
+        dot_c = RISK_DOT.get(str(risk_lv), "#64748B")
+        med_result = st.session_state.get("med_result")
+        n_meds = len(getattr(med_result, "flags", [])) if med_result else 0
+        sh(f"""
+        <div style="margin:0.8rem 0.8rem 0;border-radius:10px;background:rgba(20,184,166,0.07);border:1px solid rgba(20,184,166,0.2);padding:0.9rem 1rem;">
+            <div style="font-size:0.65rem;font-weight:700;color:#14B8A6;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">&#x1f9d1;&#x200d;&#x2695;&#xfe0f; Patient Context</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#94A3B8;">CKD Stage</span><span style="font-size:0.78rem;font-weight:700;color:#E2E8F0;">Stage {stage}</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#94A3B8;">Risk Level</span><span style="font-size:0.78rem;font-weight:700;color:{dot_c};">&#x25cf; {risk_lv}</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#94A3B8;">eGFR</span><span style="font-size:0.78rem;font-weight:700;color:#E2E8F0;">{egfr_v} mL/min</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#94A3B8;">Med Alerts</span><span style="font-size:0.78rem;font-weight:700;color:#E2E8F0;">{n_meds} flag{"s" if n_meds != 1 else ""}</span></div>
+                <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:4px;margin-top:2px;font-size:0.67rem;color:#475569;">Assessed: {ts}</div>
+            </div>
+        </div>
+        """)
+
     # Future modules lock block
     sh("""
     <div style="margin:1.2rem 0.8rem 0;border-radius:10px;
