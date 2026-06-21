@@ -111,16 +111,17 @@ def _kv_table(rows: list[tuple], col_w=(7*cm, 12*cm)) -> Table:
     return t
 
 
-def generate_report(report_data: dict) -> bytes:
-    """
-    Generate a professional PDF report.
+def _g(obj, key, default="—"):
+    """Get a value from either a dataclass (getattr) or a dict (.get)."""
+    if obj is None:
+        return default
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
 
-    report_data keys:
-        patient_name, patient_age, patient_gender, report_date,
-        risk_result (dict), medication_result (dict),
-        nutrition_items (list), economic_result (dict),
-        clinical_notes (str), include_evidence (bool)
-    """
+
+def generate_report(report_data: dict) -> bytes:
+    """Generate a professional PDF report from session-state result objects."""
     if not REPORTLAB_AVAILABLE:
         return _fallback_text_report(report_data)
 
@@ -134,7 +135,8 @@ def generate_report(report_data: dict) -> bytes:
     story = []
 
     patient_name = report_data.get("patient_name", "Anonymous Patient")
-    report_date = report_data.get("report_date", datetime.now().strftime("%d %B %Y"))
+    # page passes "date", not "report_date"
+    report_date = report_data.get("date", report_data.get("report_date", datetime.now().strftime("%d %B %Y")))
     report_id = f"RC-{datetime.now().strftime('%Y%m%d%H%M')}"
 
     # ---- COVER HEADER ----
@@ -150,39 +152,41 @@ def generate_report(report_data: dict) -> bytes:
     story.append(_build_section_bar("PATIENT SUMMARY", NAVY))
     patient_rows = [
         ("Patient Name", patient_name),
-        ("Age", f"{report_data.get('patient_age', '—')} years"),
-        ("Gender", report_data.get("patient_gender", "—")),
         ("Report Date", report_date),
         ("Report ID", report_id),
+        ("Provider", report_data.get("provider", "—")),
+        ("Institution", report_data.get("institution", "—")),
     ]
     story.append(_kv_table(patient_rows))
     story.append(Spacer(1, 0.3*cm))
 
     # ---- KIDNEY RISK ANALYSIS ----
-    risk = report_data.get("risk_result", {})
+    # page passes key "risk_result"
+    risk = report_data.get("risk_result")
     if risk:
         story.append(_build_section_bar("KIDNEY RISK ANALYSIS", BLUE))
-        cat = risk.get("risk_category", "—")
+        cat = _g(risk, "risk_category")
         risk_rows = [
-            ("Kidney Health Score", f"{risk.get('kidney_health_score', '—')} / 100"),
-            ("Risk Score", f"{risk.get('risk_score', '—')} / 100"),
+            ("Kidney Health Score", f"{_g(risk, 'kidney_health_score')} / 100"),
+            ("Risk Score", f"{_g(risk, 'risk_score')} / 100"),
             ("Risk Classification", cat),
-            ("CKD Stage", risk.get("ckd_stage", "—")),
-            ("eGFR Category", risk.get("egfr_category", "—")),
-            ("Monitoring Priority", risk.get("monitoring_priority", "—")),
+            ("CKD Stage", _g(risk, "ckd_stage")),
+            ("eGFR Category", _g(risk, "egfr_category")),
+            ("Monitoring Priority", _g(risk, "monitoring_priority")),
         ]
         story.append(_kv_table(risk_rows))
         story.append(Spacer(1, 0.2*cm))
 
-        if risk.get("clinical_summary"):
+        clinical_summary = _g(risk, "clinical_summary", "")
+        if clinical_summary:
             story.append(Paragraph("<b>Clinical Summary</b>", s["subsection"]))
-            story.append(Paragraph(risk["clinical_summary"], s["body"]))
+            story.append(Paragraph(str(clinical_summary), s["body"]))
 
-        factors = risk.get("contributing_factors", [])
+        factors = _g(risk, "contributing_factors", []) or []
         if factors:
             story.append(Paragraph("<b>Contributing Risk Factors</b>", s["subsection"]))
             factor_data = [["Risk Factor", "Value", "Impact"]] + [
-                [f.get("factor", ""), f.get("value", ""), f.get("impact", "")]
+                [str(_g(f, "factor", "")), str(_g(f, "value", "")), str(_g(f, "impact", ""))]
                 for f in factors
             ]
             ft = Table(factor_data, colWidths=[7*cm, 6*cm, 5*cm])
@@ -199,7 +203,7 @@ def generate_report(report_data: dict) -> bytes:
             ]))
             story.append(ft)
 
-        recs = risk.get("recommendations", [])
+        recs = _g(risk, "recommendations", []) or []
         if recs:
             story.append(Spacer(1, 0.2*cm))
             story.append(Paragraph("<b>Clinical Recommendations</b>", s["subsection"]))
@@ -208,17 +212,24 @@ def generate_report(report_data: dict) -> bytes:
         story.append(Spacer(1, 0.3*cm))
 
     # ---- MEDICATION REVIEW ----
-    med = report_data.get("medication_result", {})
+    # page passes key "med_result"
+    med = report_data.get("med_result")
     if med:
         story.append(_build_section_bar("MEDICATION INTELLIGENCE REVIEW", TEAL))
-        story.append(Paragraph(f"<b>Overall Medication Risk:</b> {med.get('overall_risk', '—')}", s["body"]))
+        story.append(Paragraph(f"<b>Overall Medication Risk:</b> {_g(med, 'overall_risk')}", s["body"]))
         story.append(Spacer(1, 0.1*cm))
 
-        flags = med.get("flags", [])
+        flags = _g(med, "flags", []) or []
         if flags:
             story.append(Paragraph("<b>Drug Safety Flags</b>", s["subsection"]))
+            detail_default = ""
             flag_data = [["Drug / Combination", "Flag Type", "Severity", "Key Concern"]] + [
-                [f.get("drug", ""), f.get("flag_type", ""), f.get("severity", ""), f.get("detail", "")[:60] + "…"]
+                [
+                    str(_g(f, "drug", "")),
+                    str(_g(f, "flag_type", "")),
+                    str(_g(f, "severity", "")),
+                    str(_g(f, "detail", detail_default))[:60] + "…",
+                ]
                 for f in flags
             ]
             ft = Table(flag_data, colWidths=[4.5*cm, 3.5*cm, 2.5*cm, 8.5*cm])
@@ -236,39 +247,40 @@ def generate_report(report_data: dict) -> bytes:
             ]))
             story.append(ft)
 
-        monitoring = med.get("monitoring_requirements", [])
+        monitoring = _g(med, "monitoring_requirements", []) or []
         if monitoring:
             story.append(Spacer(1, 0.15*cm))
             story.append(Paragraph("<b>Monitoring Requirements</b>", s["subsection"]))
             for m in monitoring:
                 story.append(Paragraph(f"• {m}", s["body"]))
 
-        if med.get("ai_narrative"):
+        ai_narrative = _g(med, "ai_narrative", "")
+        if ai_narrative:
             story.append(Spacer(1, 0.15*cm))
             story.append(Paragraph("<b>Clinical Pharmacist AI Review</b>", s["subsection"]))
-            narrative = med["ai_narrative"].replace("**", "").replace("*", "")
-            story.append(Paragraph(narrative, s["body"]))
+            story.append(Paragraph(str(ai_narrative).replace("**", "").replace("*", ""), s["body"]))
         story.append(Spacer(1, 0.3*cm))
 
     # ---- ECONOMIC ANALYSIS ----
-    econ = report_data.get("economic_result", {})
+    # page passes key "econ_result"
+    econ = report_data.get("econ_result")
     if econ:
         story.append(_build_section_bar("PHARMACOECONOMIC ANALYSIS", colors.HexColor("#8e44ad")))
         econ_rows = [
-            ("Direct Medical Cost (Annual)", f"₹{econ.get('direct_medical_annual', 0):,.0f}"),
-            ("Direct Non-Medical Cost (Annual)", f"₹{econ.get('direct_non_medical_annual', 0):,.0f}"),
-            ("Indirect Cost (Annual)", f"₹{econ.get('indirect_annual', 0):,.0f}"),
-            ("Total Estimated Annual Cost", f"₹{econ.get('total_annual', 0):,.0f}"),
-            ("Income Burden", f"{econ.get('income_burden_pct', 0):.1f}% of annual income"),
-            ("Financial Risk Category", econ.get("financial_risk_category", "—")),
-            ("Financial Burden Score", f"{econ.get('financial_burden_score', 0):.1f} / 100"),
+            ("Direct Medical Cost (Annual)", f"₹{_g(econ, 'direct_medical_annual', 0):,.0f}"),
+            ("Direct Non-Medical Cost (Annual)", f"₹{_g(econ, 'direct_non_medical_annual', 0):,.0f}"),
+            ("Indirect Cost (Annual)", f"₹{_g(econ, 'indirect_annual', 0):,.0f}"),
+            ("Total Estimated Annual Cost", f"₹{_g(econ, 'total_annual', 0):,.0f}"),
+            ("Income Burden", f"{_g(econ, 'income_burden_pct', 0):.1f}% of annual income"),
+            ("Financial Risk Category", _g(econ, "financial_risk_category")),
+            ("Financial Burden Score", f"{_g(econ, 'financial_burden_score', 0):.1f} / 100"),
         ]
         story.append(_kv_table(econ_rows))
-        if econ.get("ai_narrative"):
+        ai_narrative = _g(econ, "ai_narrative", "")
+        if ai_narrative:
             story.append(Spacer(1, 0.15*cm))
             story.append(Paragraph("<b>Economic Burden Assessment</b>", s["subsection"]))
-            narrative = econ["ai_narrative"].replace("**", "").replace("*", "")
-            story.append(Paragraph(narrative, s["body"]))
+            story.append(Paragraph(str(ai_narrative).replace("**", "").replace("*", ""), s["body"]))
         story.append(Spacer(1, 0.3*cm))
 
     # ---- CLINICAL NOTES ----
@@ -320,14 +332,14 @@ def _fallback_text_report(data: dict) -> bytes:
         f"Date: {data.get('report_date', datetime.now().strftime('%d %B %Y'))}",
         "",
     ]
-    risk = data.get("risk_result", {})
+    risk = data.get("risk_result")
     if risk:
         lines += [
             "KIDNEY RISK ANALYSIS",
             "-" * 30,
-            f"Risk Category: {risk.get('risk_category', '—')}",
-            f"Risk Score: {risk.get('risk_score', '—')}/100",
-            f"CKD Stage: {risk.get('ckd_stage', '—')}",
+            f"Risk Category: {_g(risk, 'risk_category')}",
+            f"Risk Score: {_g(risk, 'risk_score')}/100",
+            f"CKD Stage: {_g(risk, 'ckd_stage')}",
             "",
         ]
     lines.append("Generated by RenalCare AI AI Platform.")
