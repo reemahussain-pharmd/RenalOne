@@ -74,3 +74,80 @@ COLORS = {
 APP_TITLE = "RenalCare AI"
 APP_SUBTITLE = "AI-Powered Kidney Disease Intelligence Platform"
 APP_VERSION = "1.0.0"
+
+COMMON_DIAGNOSES = [
+    "Chronic Kidney Disease",
+    "Diabetes Mellitus Type 2",
+    "Diabetes Mellitus Type 1",
+    "Hypertension",
+    "Heart Failure",
+    "Diabetic Nephropathy",
+    "IgA Nephropathy",
+    "Lupus Nephritis",
+    "Polycystic Kidney Disease",
+    "Nephrotic Syndrome",
+    "Gout / Hyperuricemia",
+    "Anemia of CKD",
+    "Secondary Hyperparathyroidism",
+    "Metabolic Acidosis",
+    "Cardiovascular Disease",
+    "Atrial Fibrillation",
+    "Hypothyroidism",
+    "Depression / Anxiety",
+]
+
+COMMON_MEDICATIONS = [
+    # Diabetes
+    "Metformin",
+    "Glipizide",
+    "Glibenclamide",
+    "Insulin (Basal)",
+    "Empagliflozin",
+    "Sitagliptin",
+    # BP / RAAS
+    "Lisinopril",
+    "Ramipril",
+    "Enalapril",
+    "Losartan",
+    "Valsartan",
+    "Telmisartan",
+    "Amlodipine",
+    "Atenolol",
+    "Bisoprolol",
+    "Furosemide",
+    "Spironolactone",
+    "Hydrochlorothiazide",
+    # Pain / NSAIDs
+    "Ibuprofen",
+    "Naproxen",
+    "Diclofenac",
+    "Paracetamol",
+    "Tramadol",
+    # Statins
+    "Atorvastatin",
+    "Rosuvastatin",
+    "Simvastatin",
+    # CKD-specific
+    "Erythropoietin (EPO)",
+    "Ferrous Sulfate",
+    "Sodium Bicarbonate",
+    "Calcium Carbonate",
+    "Sevelamer",
+    "Cholecalciferol (Vitamin D3)",
+    "Calcitriol",
+    "Allopurinol",
+    # Anticoagulants
+    "Warfarin",
+    "Rivaroxaban",
+    "Apixaban",
+    "Enoxaparin",
+    # Other
+    "Digoxin",
+    "Gabapentin",
+    "Pregabalin",
+    "Trimethoprim",
+    "Omeprazole",
+    "Pantoprazole",
+    "Azithromycin",
+    "Amoxicillin",
+]
