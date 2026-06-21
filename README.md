@@ -4,7 +4,7 @@
 
 > *One Platform. One Patient Journey. One Kidney Intelligence Ecosystem.*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://reemahussain-pharmd-renalone.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://renalone.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-FF4B4B?logo=streamlit&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -17,7 +17,7 @@
 
 | | |
 |---|---|
-| **🌐 Live App** | **[https://reemahussain-pharmd-renalone.streamlit.app](https://reemahussain-pharmd-renalone.streamlit.app)** |
+| **🌐 Live App** | **[https://renalone.streamlit.app](https://renalone.streamlit.app)** |
 | **📁 Repository** | [github.com/reemahussain-pharmd/RenalOne](https://github.com/reemahussain-pharmd/RenalOne) |
 | **🛠 Stack** | Python · Streamlit · GPT-4o · ReportLab · Plotly · FAISS |
 
