@@ -1,0 +1,11 @@
+patient_id,age,gender,weight_kg,height_cm,bmi,diabetes,hypertension,smoking,alcohol,family_history,creatinine,egfr,albuminuria,hba1c,systolic_bp,diastolic_bp,ckd_stage
+P001,58,Male,72,165,26.4,True,True,False,False,True,2.1,35.2,Macroalbuminuria,8.2,148,92,G3b
+P002,45,Female,65,158,26.0,True,False,False,False,False,1.4,52.1,Microalbuminuria,7.1,132,84,G3a
+P003,67,Male,80,170,27.7,True,True,True,False,True,3.8,18.5,Macroalbuminuria,9.5,162,98,G4
+P004,34,Female,58,162,22.1,False,True,False,False,False,1.1,62.0,None,0.0,138,88,G2
+P005,72,Male,68,163,25.6,True,True,False,True,True,5.2,11.2,Macroalbuminuria,8.8,155,95,G5
+P006,50,Female,70,160,27.3,True,True,False,False,False,1.8,44.5,Microalbuminuria,7.8,140,90,G3b
+P007,41,Male,85,175,27.8,False,False,True,True,False,1.0,78.5,None,0.0,122,78,G1
+P008,63,Female,74,155,30.8,True,True,False,False,True,2.8,26.4,Macroalbuminuria,8.9,152,96,G4
+P009,55,Male,78,172,26.4,True,True,False,False,False,1.6,48.2,Microalbuminuria,7.4,136,86,G3a
+P010,49,Female,62,163,23.3,False,True,False,False,True,1.3,56.8,Microalbuminuria,0.0,142,90,G3a

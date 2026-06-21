@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  renalcare-app:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL:-}
+    volumes:
+      - ..:/app
+    restart: unless-stopped
+    networks:
+      - renalcare-net
+
+  # Optional PostgreSQL (uncomment when ready)
+  # postgres:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: renalcare_db
+  #     POSTGRES_USER: renalcare
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - renalcare-net
+
+networks:
+  renalcare-net:
+    driver: bridge
+
+# volumes:
+#   postgres_data:

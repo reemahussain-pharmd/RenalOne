@@ -1,0 +1,38 @@
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Data / uploads
+data/uploads/
+*.faiss
+*.pkl
+*.joblib
+
+# Logs
+*.log
+streamlit_*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Secrets
+secrets.toml
