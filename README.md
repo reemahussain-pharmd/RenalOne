@@ -4,6 +4,25 @@
 
 > *One Platform. One Patient Journey. One Kidney Intelligence Ecosystem.*
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://reemahussain-pharmd-renalone.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-FF4B4B?logo=streamlit&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Modules](https://img.shields.io/badge/Modules-7_Active-14B8A6)
+![KDIGO](https://img.shields.io/badge/Evidence-KDIGO_2024-6366F1)
+
+---
+
+## 🚀 Live Demo
+
+| | |
+|---|---|
+| **🌐 Live App** | **[https://reemahussain-pharmd-renalone.streamlit.app](https://reemahussain-pharmd-renalone.streamlit.app)** |
+| **📁 Repository** | [github.com/reemahussain-pharmd/RenalOne](https://github.com/reemahussain-pharmd/RenalOne) |
+| **🛠 Stack** | Python · Streamlit · GPT-4o · ReportLab · Plotly · FAISS |
+
+> **To deploy your own instance:** Fork this repo → Go to [share.streamlit.io](https://share.streamlit.io) → Connect repo → Set main file to `app.py` → Deploy
+
 ---
 
 ## 🎯 What Is RenalOne?

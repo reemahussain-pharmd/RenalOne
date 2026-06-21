@@ -1,7 +1,7 @@
-﻿@echo off
+@echo off
 echo.
 echo  ====================================================
-echo   RenalCare AI - AI Kidney Disease Intelligence
+echo   RenalOne - Unified Kidney Intelligence Platform
 echo  ====================================================
 echo.
 echo  Starting application...
