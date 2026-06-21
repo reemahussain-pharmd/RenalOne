@@ -1,5 +1,5 @@
-"""
-Pharmacoeconomic Intelligence — RenalCare AI
+﻿"""
+Pharmacoeconomic Intelligence — RenalOne
 Economic burden calculation inspired by published hemodialysis research.
 Methodology based on: "Economic burden and quality of life of maintenance
 hemodialysis patients in a rural area of South India" (published study).

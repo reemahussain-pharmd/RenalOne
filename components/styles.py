@@ -1,4 +1,4 @@
-"""Global CSS Design System for RenalCare AI."""
+﻿"""Global CSS Design System for RenalOne."""
 
 GLOBAL_CSS = """
 <style>

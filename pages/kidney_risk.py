@@ -1,4 +1,4 @@
-"""Kidney Risk Assessment Page — RenalCare AI."""
+﻿"""Kidney Risk Assessment Page — RenalOne."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))

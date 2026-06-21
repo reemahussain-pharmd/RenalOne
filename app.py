@@ -1,9 +1,9 @@
-"""RenalCare AI — Main Application Entry Point."""
+"""RenalOne — Main Application Entry Point."""
 
 import streamlit as st
 
 st.set_page_config(
-    page_title="RenalCare AI",
+    page_title="RenalOne",
     page_icon="\U0001fac0",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -37,9 +37,9 @@ with st.sidebar:
                         font-size:1.15rem;flex-shrink:0;">\U0001fac0</div>
             <div>
                 <div style="font-size:1.02rem;font-weight:800;color:#F1F5F9;
-                            letter-spacing:-0.01em;line-height:1.2;">RenalCare AI</div>
+                            letter-spacing:-0.01em;line-height:1.2;">RenalOne</div>
                 <div style="font-size:0.65rem;color:#64748B;font-weight:500;
-                            letter-spacing:0.06em;text-transform:uppercase;">Clinical Intelligence</div>
+                            letter-spacing:0.06em;text-transform:uppercase;">Unified Kidney Intelligence</div>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-"""Pharmacoeconomic Intelligence — Sprint 4 Upgrade — RenalCare AI."""
+﻿"""Pharmacoeconomic Intelligence — Sprint 4 Upgrade — RenalOne."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))

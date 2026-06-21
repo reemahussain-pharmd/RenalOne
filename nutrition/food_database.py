@@ -1,5 +1,5 @@
-"""
-Renal Nutrition Food Database — RenalCare AI
+﻿"""
+Renal Nutrition Food Database — RenalOne
 Nutrient data per 100g unless otherwise noted.
 Sources: USDA, Renal Dietitians Association guidelines, KDIGO Nutrition 2020.
 """

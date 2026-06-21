@@ -1,4 +1,4 @@
-"""Dashboard Home Page — RenalCare AI."""
+"""Dashboard Home Page — RenalOne."""
 
 import streamlit as st
 from components.styles import sh
@@ -27,39 +27,59 @@ def render():
                 <div style="background:rgba(20,184,166,0.2);border:1px solid rgba(20,184,166,0.3);
                             border-radius:8px;padding:4px 12px;font-size:0.72rem;font-weight:700;
                             color:#2DD4BF;letter-spacing:0.06em;text-transform:uppercase;">
-                    Clinical AI Platform
+                    Unified Kidney Intelligence
                 </div>
                 <div style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);
                             border-radius:8px;padding:4px 12px;font-size:0.72rem;font-weight:700;
                             color:#A5B4FC;letter-spacing:0.06em;text-transform:uppercase;">
                     KDIGO Evidence-Based
                 </div>
+                <div style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.3);
+                            border-radius:8px;padding:4px 12px;font-size:0.72rem;font-weight:700;
+                            color:#FCD34D;letter-spacing:0.06em;text-transform:uppercase;">
+                    PharmD Research
+                </div>
             </div>
-            <h1 style="color:white;font-size:2.2rem;font-weight:900;margin:0 0 0.6rem 0;
-                       letter-spacing:-0.03em;line-height:1.15;">
-                RenalCare AI
+            <h1 style="color:white;font-size:2.6rem;font-weight:900;margin:0 0 0.3rem 0;
+                       letter-spacing:-0.04em;line-height:1.1;">
+                RenalOne
             </h1>
-            <p style="color:rgba(255,255,255,0.7);font-size:1rem;margin:0 0 1.5rem 0;
-                      max-width:600px;line-height:1.6;">
-                Enterprise-grade kidney disease intelligence platform built on published clinical
-                research and KDIGO 2024 guidelines. Six integrated modules for comprehensive
-                renal care decision support.
+            <div style="font-size:1.1rem;font-weight:600;color:#2DD4BF;margin-bottom:0.8rem;
+                        letter-spacing:0.01em;">
+                Unified Kidney Intelligence Platform
+            </div>
+            <p style="color:rgba(255,255,255,0.72);font-size:0.92rem;margin:0 0 1.4rem 0;
+                      max-width:640px;line-height:1.65;">
+                Transforming kidney disease management through intelligent risk assessment, clinical pharmacy
+                intelligence, nutrition support, pharmacoeconomic analysis, and evidence-driven decision support.
             </p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;">
                 <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
                             border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
-                            font-weight:500;">
-                    \U0001f3e5 Clinical Decision Support
+                            font-weight:500;">\U0001f3e5 Clinical Decision Support</div>
+                <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+                            border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
+                            font-weight:500;">\U0001f4ca Pharmacoeconomic Analysis</div>
+                <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+                            border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
+                            font-weight:500;">\U0001f916 GPT-4o AI Integration</div>
+                <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+                            border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
+                            font-weight:500;">\U0001f3af Patient Adherence Intelligence</div>
+            </div>
+            <div style="display:flex;gap:0;border:1px solid rgba(20,184,166,0.35);border-radius:10px;
+                        overflow:hidden;width:fit-content;">
+                <div style="background:rgba(20,184,166,0.15);padding:8px 18px;font-size:0.82rem;
+                            font-weight:700;color:#2DD4BF;border-right:1px solid rgba(20,184,166,0.25);">
+                    One Platform.
                 </div>
-                <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
-                            border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
-                            font-weight:500;">
-                    \U0001f4ca Pharmacoeconomic Analysis
+                <div style="background:rgba(20,184,166,0.1);padding:8px 18px;font-size:0.82rem;
+                            font-weight:700;color:#2DD4BF;border-right:1px solid rgba(20,184,166,0.25);">
+                    One Patient Journey.
                 </div>
-                <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
-                            border-radius:8px;padding:6px 14px;font-size:0.8rem;color:rgba(255,255,255,0.8);
-                            font-weight:500;">
-                    \U0001f916 GPT-4o AI Integration
+                <div style="background:rgba(20,184,166,0.07);padding:8px 18px;font-size:0.82rem;
+                            font-weight:700;color:#2DD4BF;">
+                    One Kidney Intelligence Ecosystem.
                 </div>
             </div>
         </div>
@@ -303,7 +323,7 @@ def render():
     # ── Platform Differentiators ───────────────────────────────────────────
     sh("""
     <div style="margin-bottom:0.6rem;">
-        <div style="font-size:1.05rem;font-weight:800;color:#0F172A;margin-bottom:0.3rem;">&#x2b50; What Makes RenalCare AI Different</div>
+        <div style="font-size:1.05rem;font-weight:800;color:#0F172A;margin-bottom:0.3rem;">&#x2b50; What Makes RenalOne Different</div>
         <div style="font-size:0.82rem;color:#64748B;margin-bottom:0.9rem;">Built by a PharmD researcher — clinical intelligence at every layer</div>
     </div>
     """)
@@ -323,10 +343,10 @@ def render():
 
     sh("<div style='margin-top:1.2rem;'></div>")
 
-    # ── Why RenalCare AI Exists ────────────────────────────────────────────
+    # ── Why RenalOne Exists ────────────────────────────────────────────
     sh("""
     <div class="rc-card" style="margin-bottom:1.2rem;">
-        <div style="font-size:0.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">&#x1f4d6; Why RenalCare AI Exists</div>
+        <div style="font-size:0.72rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">&#x1f4d6; Why RenalOne Exists</div>
         <div style="font-size:0.95rem;font-weight:800;color:#0F172A;margin-bottom:0.8rem;">CKD is a silent, progressive, and costly disease. Current tools don't connect the clinical, nutritional, pharmacological, and economic dimensions.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
             <div style="background:#FEF2F2;border-left:3px solid #EF4444;padding:0.6rem 0.8rem;border-radius:0 8px 8px 0;"><div style="font-size:0.8rem;font-weight:700;color:#991B1B;">850M+</div><div style="font-size:0.75rem;color:#374151;">people affected by CKD globally — 90% undiagnosed</div></div>
@@ -343,7 +363,7 @@ def render():
                 padding:0.9rem 1.2rem;display:flex;gap:0.8rem;align-items:flex-start;">
         <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
         <div style="font-size:0.8rem;color:#92400E;line-height:1.55;">
-            <strong>Clinical Disclaimer:</strong> RenalCare AI is a decision-support tool intended for
+            <strong>Clinical Disclaimer:</strong> RenalOne is a decision-support tool intended for
             educational and research purposes. All outputs must be reviewed by qualified healthcare
             professionals. This platform does not constitute medical advice or replace clinical judgment.
         </div>

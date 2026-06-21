@@ -1,4 +1,4 @@
-"""Shared helper functions for RenalCare AI."""
+﻿"""Shared helper functions for RenalOne."""
 import os
 import sys
 from pathlib import Path

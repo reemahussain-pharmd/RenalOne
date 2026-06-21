@@ -1,4 +1,4 @@
-"""Kidney Nutrition Intelligence — Sprint 3 Upgrade — RenalCare AI."""
+﻿"""Kidney Nutrition Intelligence — Sprint 3 Upgrade — RenalOne."""
 import sys, base64
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))

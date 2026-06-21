@@ -1,5 +1,5 @@
-"""
-Clinical Evidence Intelligence (RAG) — RenalCare AI
+﻿"""
+Clinical Evidence Intelligence (RAG) — RenalOne
 Retrieval-Augmented Generation for nephrology literature.
 Falls back gracefully when optional deps (FAISS, sentence-transformers) are unavailable.
 """

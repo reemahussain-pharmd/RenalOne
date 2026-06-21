@@ -1,5 +1,5 @@
-"""
-Kidney Nutrition Intelligence — RenalCare AI
+﻿"""
+Kidney Nutrition Intelligence — RenalOne
 Analyses food suitability for CKD patients based on stage and clinical status.
 """
 import sys

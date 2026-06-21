@@ -1,4 +1,4 @@
-"""Premium Plotly chart components — RenalCare AI."""
+﻿"""Premium Plotly chart components — RenalOne."""
 import plotly.graph_objects as go
 import plotly.express as px
 

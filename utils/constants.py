@@ -1,4 +1,4 @@
-"""Shared constants for RenalCare AI."""
+"""Shared constants for RenalOne."""
 
 # CKD Stage definitions by eGFR
 CKD_STAGES = {
@@ -71,8 +71,8 @@ COLORS = {
     "card_bg": "#f8fafc",
 }
 
-APP_TITLE = "RenalCare AI"
-APP_SUBTITLE = "AI-Powered Kidney Disease Intelligence Platform"
+APP_TITLE = "RenalOne"
+APP_SUBTITLE = "Unified Kidney Intelligence Platform"
 APP_VERSION = "1.0.0"
 
 COMMON_DIAGNOSES = [

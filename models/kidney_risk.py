@@ -1,5 +1,5 @@
-"""
-Kidney Risk Assessment Model — RenalCare AI
+﻿"""
+Kidney Risk Assessment Model — RenalOne
 Uses rule-based clinical scoring validated against KDIGO guidelines
 with optional ML overlay if scikit-learn is available.
 """

@@ -1,5 +1,5 @@
-"""
-Medication Intelligence Engine — RenalCare AI
+﻿"""
+Medication Intelligence Engine — RenalOne
 Clinical Pharmacist AI module for drug safety in CKD patients.
 """
 import sys

@@ -1,4 +1,4 @@
-﻿# RenalCare AI V1 â€” Streamlit Cloud compatible requirements
+﻿# RenalOne V1 â€” Streamlit Cloud compatible requirements
 
 # Core UI
 streamlit>=1.32.0
