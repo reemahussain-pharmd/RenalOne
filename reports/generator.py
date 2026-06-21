@@ -220,15 +220,23 @@ def generate_report(report_data: dict) -> bytes:
         story.append(Spacer(1, 0.1*cm))
 
         flags = _g(med, "flags", []) or []
+        # Deduplicate: one row per unique drug+flag_type combination
+        seen = set()
+        deduped_flags = []
+        for f in flags:
+            key = (str(_g(f, "drug", "")), str(_g(f, "flag_type", "")))
+            if key not in seen:
+                seen.add(key)
+                deduped_flags.append(f)
+        flags = deduped_flags
         if flags:
             story.append(Paragraph("<b>Drug Safety Flags</b>", s["subsection"]))
-            detail_default = ""
             flag_data = [["Drug / Combination", "Flag Type", "Severity", "Key Concern"]] + [
                 [
                     str(_g(f, "drug", "")),
                     str(_g(f, "flag_type", "")),
                     str(_g(f, "severity", "")),
-                    str(_g(f, "detail", detail_default))[:60] + "…",
+                    str(_g(f, "detail", ""))[:60] + "…",
                 ]
                 for f in flags
             ]
