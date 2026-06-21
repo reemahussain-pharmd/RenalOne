@@ -5,258 +5,266 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 from medication.checker import MedicationInput, run_medication_review
+from utils.constants import COMMON_DIAGNOSES, COMMON_MEDICATIONS
 
 
-COMMON_MEDS = [
-    "Metformin", "Insulin", "Amlodipine", "Lisinopril", "Losartan",
-    "Furosemide", "Spironolactone", "Ibuprofen", "Aspirin",
-    "Atorvastatin", "Rosuvastatin", "Omeprazole", "Pantoprazole",
-    "Ferrous Sulphate", "Calcitriol", "Cinacalcet", "Sevelamer",
-    "Erythropoietin", "Darbepoetin", "Digoxin", "Atenolol",
-    "Carvedilol", "Gabapentin", "Pregabalin", "Allopurinol",
-    "Tramadol", "Paracetamol", "Clopidogrel", "Warfarin",
-]
-
-COMMON_DIAGNOSES = [
-    "CKD Stage 3", "CKD Stage 4", "CKD Stage 5 (ESRD)",
-    "Type 2 Diabetes Mellitus", "Hypertension", "Heart Failure",
-    "Anaemia of CKD", "CKD-Mineral Bone Disorder", "Hyperkalemia",
-    "Hyperuricaemia/Gout", "Coronary Artery Disease",
-]
-
-
-def _severity_badge(severity: str) -> str:
-    colors = {"High": ("#e74c3c", "#fdedec"), "Moderate": ("#e67e22", "#fdf2e9"), "Low": ("#3498db", "#ebf5fb")}
-    c, bg = colors.get(severity, ("#718096", "#f8f9fa"))
-    return f"<span style='background:{bg}; color:{c}; padding:2px 10px; border-radius:12px; font-size:0.78rem; font-weight:600;'>{severity}</span>"
-
-
-def _flag_type_icon(flag_type: str) -> str:
-    icons = {
-        "Nephrotoxicity": "🫘",
-        "Dose Adjustment": "⚖️",
-        "Interaction": "🔗",
-        "ADR": "⚠️",
-        "Monitoring": "🔍",
-    }
-    return icons.get(flag_type, "⚠️")
+SEVERITY_CONFIG = {
+    "HIGH":     ("#EF4444", "#FEE2E2", "#991B1B", "\U0001f534"),
+    "MODERATE": ("#F59E0B", "#FEF3C7", "#92400E", "\U0001f7e1"),
+    "LOW":      ("#3B82F6", "#EFF6FF", "#1E40AF", "\U0001f535"),
+    "INFO":     ("#6366F1", "#EEF2FF", "#3730A3", "\U0001f7e3"),
+}
 
 
 def render():
+    # ── Page Header ────────────────────────────────────────────────────────
     st.markdown("""
-    <div style='background: linear-gradient(135deg, #4a0e7a, #8e44ad);
-                border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>💊 Medication Intelligence Engine</h2>
-        <p style='color:#d7bdf7; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            Clinical Pharmacy AI · Drug Safety Screening · PharmD Intelligence Module
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class='warning-box'>
-        <b>⚕️ Clinical Disclaimer:</b> This AI-generated medication review is for <b>clinical decision support only</b>.
-        It does not replace the judgment of a licensed pharmacist or physician.
-        All medication decisions must be made by qualified healthcare professionals.
-    </div>
-    """, unsafe_allow_html=True)
-
-    with st.form("med_form"):
-        st.markdown("<div class='section-header'>🏥 Patient Diagnoses</div>", unsafe_allow_html=True)
-        diagnoses_selected = st.multiselect(
-            "Select current diagnoses",
-            options=COMMON_DIAGNOSES,
-            default=["CKD Stage 4", "Type 2 Diabetes Mellitus", "Hypertension"],
-        )
-        extra_dx = st.text_input("Additional diagnoses (comma separated)", placeholder="e.g. Diabetic Nephropathy, Gout")
-        if extra_dx:
-            diagnoses_selected += [d.strip() for d in extra_dx.split(",") if d.strip()]
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<div class='section-header'>💊 Current Medications</div>", unsafe_allow_html=True)
-        meds_selected = st.multiselect(
-            "Select current medications",
-            options=COMMON_MEDS,
-            default=["Metformin", "Ibuprofen", "Lisinopril", "Furosemide"],
-        )
-        extra_meds = st.text_input("Additional medications (comma separated)", placeholder="e.g. Cinacalcet 30mg, Sevelamer 800mg")
-        if extra_meds:
-            meds_selected += [m.strip() for m in extra_meds.split(",") if m.strip()]
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<div class='section-header'>🧪 Laboratory Values</div>", unsafe_allow_html=True)
-        l1, l2, l3, l4 = st.columns(4)
-        with l1:
-            egfr = st.number_input("eGFR (mL/min/1.73m²)", min_value=1.0, max_value=120.0, value=28.0, step=0.5)
-        with l2:
-            creatinine = st.number_input("Serum Creatinine (mg/dL)", min_value=0.3, max_value=20.0, value=2.8, step=0.1)
-        with l3:
-            potassium = st.number_input("Potassium (mEq/L)", min_value=2.0, max_value=8.0, value=5.2, step=0.1)
-        with l4:
-            hemoglobin = st.number_input("Hemoglobin (g/dL)", min_value=4.0, max_value=18.0, value=9.5, step=0.1)
-
-        ckd_stage = st.selectbox("CKD Stage", ["G1", "G2", "G3a", "G3b", "G4", "G5 (ESRD)"], index=4)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        submit = st.form_submit_button("🔍 Run Medication Review", use_container_width=True)
-
-    if submit:
-        if not meds_selected:
-            st.error("Please select at least one medication to review.")
-            return
-        if not diagnoses_selected:
-            st.warning("Please select at least one diagnosis for contextual analysis.")
-
-        with st.spinner("Running Clinical Pharmacy AI analysis..."):
-            inp = MedicationInput(
-                medications=meds_selected,
-                diagnoses=diagnoses_selected,
-                egfr=egfr,
-                serum_creatinine=creatinine,
-                potassium=potassium,
-                hemoglobin=hemoglobin,
-                ckd_stage=ckd_stage,
-            )
-            result = run_medication_review(inp)
-
-        # Save to session
-        st.session_state["medication_result"] = result
-        st.session_state["medication_input"] = inp
-
-        st.markdown("---")
-        st.markdown("## 📋 Medication Review Report")
-
-        # Overall risk banner
-        risk_configs = {
-            "Low": ("✅", "#27ae60", "#d5f5e3"),
-            "Moderate": ("⚠️", "#e67e22", "#fdf2e9"),
-            "High": ("🔶", "#e74c3c", "#fdedec"),
-            "Critical": ("🚨", "#c0392b", "#fdedec"),
-        }
-        icon, color, bg = risk_configs.get(result.overall_risk, ("ℹ️", "#2980b9", "#ebf5fb"))
-        st.markdown(f"""
-        <div style='background:{bg}; border:2px solid {color}; border-radius:10px; padding:1rem 1.5rem; margin-bottom:1rem;'>
-            <span style='font-size:1.1rem; font-weight:700; color:{color};'>{icon} Overall Medication Risk: {result.overall_risk}</span>
-            <br><span style='font-size:0.85rem; color:#4a5568;'>
-                {len(result.flags)} flag(s) identified across {len(meds_selected)} medication(s)
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Medication list
-        st.markdown("### 💊 Reviewed Medications")
-        med_cols = st.columns(min(len(meds_selected), 4))
-        for i, med in enumerate(meds_selected):
-            with med_cols[i % len(med_cols)]:
-                flagged = any(med.lower() in f.drug.lower() for f in result.flags)
-                card_color = "#e74c3c" if flagged else "#27ae60"
-                card_bg = "#fff5f5" if flagged else "#f0fff4"
-                flag_text = "⚠️ Flagged" if flagged else "✅ No flags"
-                st.markdown(f"""
-                <div style='background:{card_bg}; border:1px solid {card_color}33; border-radius:8px;
-                            padding:0.6rem 0.8rem; margin-bottom:0.4rem; border-left:3px solid {card_color};'>
-                    <div style='font-weight:600; font-size:0.85rem; color:#1e3a5f;'>{med}</div>
-                    <div style='font-size:0.75rem; color:{card_color};'>{flag_text}</div>
+    <div class="page-header">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+                    <span style="font-size:1.6rem;">\U0001f48a</span>
+                    <span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);
+                                 font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;
+                                 letter-spacing:0.06em;">PHARMD SIGNATURE MODULE</span>
                 </div>
-                """, unsafe_allow_html=True)
+                <h1 style="color:white !important;font-size:1.7rem !important;font-weight:800 !important;
+                           margin:0 0 0.3rem 0 !important;letter-spacing:-0.02em;">
+                    Medication Intelligence Engine
+                </h1>
+                <p style="color:rgba(255,255,255,0.72) !important;font-size:0.88rem !important;margin:0 !important;">
+                    Nephrotoxicity screening &bull; Renal dose adjustment &bull; Drug interaction analysis
+                </p>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;
+                            letter-spacing:0.07em;">Evidence Base</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">KDIGO 2024</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">Micromedex</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        # Flags
-        if result.flags:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 🚨 Drug Safety Flags")
-            for flag in result.flags:
-                sev = flag.severity
-                sev_colors = {"High": ("#e74c3c", "#fff5f5"), "Moderate": ("#e67e22", "#fffaf0"), "Low": ("#3498db", "#ebf5fb")}
-                fc, fbg = sev_colors.get(sev, ("#718096", "#f8f9fa"))
-                st.markdown(f"""
-                <div style='background:{fbg}; border:1px solid {fc}44; border-radius:10px; padding:1rem 1.2rem;
-                            margin-bottom:0.6rem; border-left:4px solid {fc};'>
-                    <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;'>
-                        <span style='font-weight:700; color:#1e3a5f; font-size:0.95rem;'>
-                            {_flag_type_icon(flag.flag_type)} {flag.drug}
-                        </span>
-                        <div style='display:flex; gap:0.5rem;'>
-                            <span style='background:#e8eaf6; color:#3f51b5; padding:2px 8px; border-radius:10px; font-size:0.75rem;'>{flag.flag_type}</span>
-                            {_severity_badge(flag.severity)}
+    left_col, right_col = st.columns([1.1, 1.5])
+
+    with left_col:
+        with st.form("med_form"):
+            st.markdown('<div class="section-title-accent"><span>\U0001f9fe</span> Patient Profile</div>', unsafe_allow_html=True)
+
+            egfr = st.number_input(
+                "eGFR (mL/min/1.73m²)",
+                min_value=1, max_value=150, value=45,
+                help="CKD-EPI calculated eGFR"
+            )
+            creatinine = st.number_input("Serum Creatinine (mg/dL)", 0.4, 15.0, 1.8, 0.1)
+
+            st.markdown('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Active Diagnoses</div>', unsafe_allow_html=True)
+            diagnoses = st.multiselect(
+                "Diagnoses",
+                options=COMMON_DIAGNOSES,
+                default=["Chronic Kidney Disease", "Hypertension"],
+                label_visibility="collapsed",
+            )
+
+            st.markdown('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Current Medications</div>', unsafe_allow_html=True)
+            medications = st.multiselect(
+                "Medications",
+                options=COMMON_MEDICATIONS,
+                default=["Metformin", "Ibuprofen", "Lisinopril"],
+                label_visibility="collapsed",
+            )
+
+            st.markdown("**Laboratory Values**")
+            c1, c2 = st.columns(2)
+            with c1:
+                potassium = st.number_input("Potassium (mEq/L)", 2.5, 7.0, 4.2, 0.1)
+            with c2:
+                sodium = st.number_input("Sodium (mEq/L)", 120, 160, 138)
+            hemoglobin = st.number_input("Hemoglobin (g/dL)", 5.0, 18.0, 10.5, 0.1)
+
+            submitted = st.form_submit_button(
+                "\U0001f50d  Run Medication Review",
+                use_container_width=True,
+                type="primary",
+            )
+
+    with right_col:
+        if submitted and medications:
+            with st.spinner("Analyzing medications..."):
+                inp = MedicationInput(
+                    egfr=float(egfr),
+                    serum_creatinine=float(creatinine),
+                    diagnoses=diagnoses,
+                    medications=medications,
+                    potassium=potassium,
+                    sodium=sodium,
+                    hemoglobin=hemoglobin,
+                )
+                result = run_medication_review(inp)
+                st.session_state.med_result = result
+                st.session_state.med_input_count = len(medications)
+
+        if st.session_state.get("med_result"):
+            result = st.session_state.med_result
+            med_count = st.session_state.get("med_input_count", len(medications) if submitted else 0)
+            _render_results(result, med_count)
+        elif submitted and not medications:
+            st.markdown("""
+            <div class="alert alert-warning">
+                ⚠️ Please select at least one medication to review.
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            _render_placeholder()
+
+
+def _render_results(result, med_count=0):
+    # Determine counts
+    flags = result.flags
+    high_flags = [f for f in flags if f.severity.upper() == "HIGH"]
+    mod_flags  = [f for f in flags if f.severity.upper() == "MODERATE"]
+    low_flags  = [f for f in flags if f.severity.upper() not in ("HIGH", "MODERATE")]
+    total = len(flags)
+    critical_count = len(high_flags)
+
+    risk_color = "#EF4444" if critical_count > 0 else ("#F59E0B" if mod_flags else "#10B981")
+    risk_label = "HIGH RISK" if critical_count > 0 else ("MODERATE RISK" if mod_flags else "LOW RISK")
+    risk_bg    = "#FEE2E2" if critical_count > 0 else ("#FEF3C7" if mod_flags else "#D1FAE5")
+
+    st.markdown(f"""
+    <div style="background:{risk_bg};border:2px solid {risk_color};border-radius:14px;
+                padding:1.2rem 1.5rem;margin-bottom:1.2rem;
+                display:flex;align-items:center;justify-content:space-between;">
+        <div>
+            <div style="font-size:0.72rem;font-weight:700;color:{risk_color};
+                        letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.2rem;">
+                Medication Review Complete
+            </div>
+            <div style="font-size:1.4rem;font-weight:800;color:{risk_color};">{risk_label}</div>
+            <div style="font-size:0.82rem;color:#334155;margin-top:0.2rem;">
+                {total} flags identified &bull; {med_count} medications reviewed
+            </div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:2rem;font-weight:900;color:{risk_color};">{critical_count}</div>
+            <div style="font-size:0.72rem;font-weight:700;color:{risk_color};
+                        letter-spacing:0.06em;text-transform:uppercase;">Critical Alerts</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Severity pills ─────────────────────────────────────────────────────
+    st.markdown(f"""
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="background:#FEE2E2;color:#991B1B;padding:4px 12px;border-radius:20px;
+                     font-size:0.77rem;font-weight:700;">
+            \U0001f534 {len(high_flags)} High Severity
+        </span>
+        <span style="background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:20px;
+                     font-size:0.77rem;font-weight:700;">
+            \U0001f7e1 {len(mod_flags)} Moderate
+        </span>
+        <span style="background:#EFF6FF;color:#1E40AF;padding:4px 12px;border-radius:20px;
+                     font-size:0.77rem;font-weight:700;">
+            \U0001f535 {len(low_flags)} Informational
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Drug flag cards ────────────────────────────────────────────────────
+    if flags:
+        st.markdown('<div class="section-title"><span>\U0001f6a8</span> Drug Alerts</div>', unsafe_allow_html=True)
+        for flag in flags:
+            sev = flag.severity.upper()
+            color, bg, text_color, dot = SEVERITY_CONFIG.get(sev, SEVERITY_CONFIG["INFO"])
+            st.markdown(f"""
+            <div class="flag-card" style="border-left:4px solid {color};background:{bg}18;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                    <div style="flex:1;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.35rem;">
+                            <span style="font-size:1rem;">{dot}</span>
+                            <span style="font-size:0.9rem;font-weight:700;color:#0F172A;">{flag.drug}</span>
+                            <span style="background:{bg};color:{text_color};font-size:0.68rem;
+                                         font-weight:700;padding:2px 8px;border-radius:20px;
+                                         letter-spacing:0.05em;border:1px solid {color}40;">
+                                {flag.flag_type.replace('_', ' ')}
+                            </span>
+                        </div>
+                        <div style="font-size:0.83rem;color:#374151;line-height:1.5;margin-bottom:0.5rem;">
+                            {flag.detail}
+                        </div>
+                        <div style="background:rgba(255,255,255,0.7);border-radius:6px;
+                                    padding:6px 10px;font-size:0.8rem;color:#1E3A5F;font-weight:500;">
+                            \U0001f4a1 <strong>Action:</strong> {flag.action}
                         </div>
                     </div>
-                    <div style='font-size:0.85rem; color:#4a5568; margin-bottom:0.3rem;'><b>Concern:</b> {flag.detail}</div>
-                    <div style='font-size:0.85rem; color:{fc};'><b>Recommended Action:</b> {flag.action}</div>
+                    <div style="background:{color};color:white;border-radius:6px;padding:4px 9px;
+                                font-size:0.68rem;font-weight:700;letter-spacing:0.04em;
+                                white-space:nowrap;flex-shrink:0;align-self:flex-start;">
+                        {sev}
+                    </div>
                 </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div class='success-box'>
-                ✅ No major drug safety flags identified by rule-based screening.
-                A comprehensive clinical pharmacist review is still recommended.
             </div>
             """, unsafe_allow_html=True)
-
-        # Monitoring requirements
-        if result.monitoring_requirements:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 🔍 Monitoring Requirements")
-            for req in result.monitoring_requirements:
-                st.markdown(f"""
-                <div style='background:white; border-radius:8px; padding:0.6rem 1rem; margin:0.3rem 0;
-                            box-shadow:0 1px 4px rgba(0,0,0,0.05); border-left:3px solid #2980b9;
-                            font-size:0.87rem; color:#2d3748;'>
-                    🔍 {req}
-                </div>
-                """, unsafe_allow_html=True)
-
-        # AI narrative
-        if result.ai_narrative:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 🤖 Clinical Pharmacist AI Review")
-            st.markdown(f"""
-            <div style='background:white; border-radius:10px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-                        border-left:4px solid #8e44ad;'>
-            """, unsafe_allow_html=True)
-            st.markdown(result.ai_narrative)
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        # Clinical considerations
-        if result.clinical_considerations:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 💡 Clinical Considerations")
-            for con in result.clinical_considerations:
-                st.markdown(f"""
-                <div style='background:#f8f9fa; border-radius:6px; padding:0.5rem 1rem; margin:0.2rem 0;
-                            font-size:0.85rem; color:#4a5568; border-left:3px solid #9b59b6;'>
-                    {con}
-                </div>
-                """, unsafe_allow_html=True)
-
-        # Disclaimer
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(f"""
-        <div class='warning-box' style='font-size:0.82rem;'>
-            {result.disclaimer}
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("---")
-        if st.button("📋 Add to Clinical Report →", use_container_width=True):
-            st.session_state.current_page = "Report"
-            st.rerun()
-
-    elif not submit:
-        st.markdown("<br>", unsafe_allow_html=True)
+    else:
         st.markdown("""
-        <div style='background:white; border-radius:12px; padding:3rem; text-align:center;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-            <div style='font-size:3rem; margin-bottom:1rem;'>💊</div>
-            <h3 style='color:#1e3a5f;'>PharmD AI Medication Review</h3>
-            <p style='color:#718096; font-size:0.9rem;'>
-                Select diagnoses, medications, and lab values above to run an
-                AI-powered medication safety review for CKD patients.
-            </p>
-            <div style='display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-top:1rem;'>
-                <span style='background:#f3e8ff; color:#8e44ad; padding:4px 12px; border-radius:12px; font-size:0.8rem;'>Drug Interactions</span>
-                <span style='background:#f3e8ff; color:#8e44ad; padding:4px 12px; border-radius:12px; font-size:0.8rem;'>Nephrotoxicity</span>
-                <span style='background:#f3e8ff; color:#8e44ad; padding:4px 12px; border-radius:12px; font-size:0.8rem;'>Dose Adjustment</span>
-                <span style='background:#f3e8ff; color:#8e44ad; padding:4px 12px; border-radius:12px; font-size:0.8rem;'>ADR Risk</span>
+        <div class="alert alert-success">
+            ✅ <strong>No drug alerts identified.</strong> All selected medications appear
+            appropriate for the entered eGFR and clinical context.
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ── Monitoring requirements ────────────────────────────────────────────
+    monitoring = getattr(result, "monitoring_requirements", [])
+    if monitoring:
+        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="section-title"><span>\U0001f9ea</span> Monitoring Requirements</div>', unsafe_allow_html=True)
+        mon_html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+        for m in monitoring:
+            mon_html += f'<span style="background:#EEF2FF;color:#3730A3;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">\U0001f4dd {m}</span>'
+        mon_html += '</div>'
+        st.markdown(mon_html, unsafe_allow_html=True)
+
+    # ── AI narrative ───────────────────────────────────────────────────────
+    if result.ai_narrative:
+        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="background:linear-gradient(135deg,#EEF2FF,#F0FDF4);border-radius:12px;
+                    padding:1.2rem;border:1px solid #C7D2FE;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;">
+                <span style="font-size:1.1rem;">\U0001f916</span>
+                <span style="font-size:0.85rem;font-weight:700;color:#3730A3;">AI Clinical Narrative</span>
+                <span style="background:#EEF2FF;color:#6366F1;font-size:0.68rem;font-weight:700;
+                             padding:2px 8px;border-radius:20px;letter-spacing:0.05em;">GPT-4o</span>
+            </div>
+            <div style="font-size:0.85rem;color:#1E293B;line-height:1.65;">
+                {result.ai_narrative.replace(chr(10), '<br>')}
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+
+def _render_placeholder():
+    st.markdown("""
+    <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
+                padding:3rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;">\U0001f48a</div>
+        <div style="font-size:1rem;font-weight:700;color:#0F172A;margin-bottom:0.5rem;">
+            Medication Intelligence Engine
+        </div>
+        <div style="font-size:0.84rem;color:#64748B;max-width:380px;margin:0 auto;line-height:1.6;">
+            Complete the patient profile form to run a comprehensive medication safety
+            review including nephrotoxicity screening, dose adjustment requirements,
+            and drug interaction analysis.
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <span style="background:#EEF2FF;color:#3730A3;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">Nephrotoxicity Check</span>
+            <span style="background:#FEF3C7;color:#92400E;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">Renal Dose Adjustment</span>
+            <span style="background:#FEE2E2;color:#991B1B;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">Drug Interactions</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)

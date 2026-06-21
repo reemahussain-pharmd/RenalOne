@@ -5,253 +5,256 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 from models.kidney_risk import RiskInput, calculate_risk
-from components.charts import risk_gauge, risk_factor_bar, egfr_trend_placeholder
-from utils.helpers import calculate_bmi, classify_bmi
+from components.charts import risk_gauge, risk_factor_bar
+
+
+RISK_CONFIG = {
+    "LOW":      ("#10B981", "#D1FAE5", "#065F46"),
+    "MODERATE": ("#F59E0B", "#FEF3C7", "#92400E"),
+    "HIGH":     ("#EF4444", "#FEE2E2", "#991B1B"),
+    "CRITICAL": ("#7C3AED", "#EDE9FE", "#4C1D95"),
+}
+
+CKD_STAGE_DESC = {
+    "G1":  ("Normal or High",           ">= 90",  "#10B981"),
+    "G2":  ("Mildly Decreased",         "60-89",  "#3B82F6"),
+    "G3a": ("Mildly-Moderately Decr.",  "45-59",  "#F59E0B"),
+    "G3b": ("Moderately-Severely Decr.","30-44",  "#F97316"),
+    "G4":  ("Severely Decreased",       "15-29",  "#EF4444"),
+    "G5":  ("Kidney Failure",           "< 15",   "#7C3AED"),
+}
+
+ALBUMIN_MAP = {
+    "A1: Normal (<30 mg/g)":                  "None",
+    "A2: Moderately Elevated (30-300 mg/g)":  "Microalbuminuria",
+    "A3: Severely Elevated (>300 mg/g)":      "Macroalbuminuria",
+}
+
+IMPACT_SCORE = {"Low": 4, "Moderate": 8, "High": 15, "Critical": 25}
 
 
 def render():
     st.markdown("""
-    <div style='background: linear-gradient(135deg, #1e3a5f, #2980b9);
-                border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>🫀 Kidney Risk Assessment</h2>
-        <p style='color:#bde0fe; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            AI-powered CKD risk scoring based on clinical biomarkers and KDIGO guidelines
-        </p>
+    <div class="page-header">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+                    <span style="font-size:1.5rem;">❤️</span>
+                    <span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);
+                                 font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;
+                                 letter-spacing:0.06em;">KDIGO 2024 RISK MODEL</span>
+                </div>
+                <h1 style="color:white !important;font-size:1.7rem !important;font-weight:800 !important;
+                           margin:0 0 0.3rem 0 !important;">Kidney Risk Assessment</h1>
+                <p style="color:rgba(255,255,255,0.72) !important;font-size:0.88rem !important;margin:0 !important;">
+                    Multi-variable CKD risk stratification using eGFR, albuminuria, comorbidities &amp; lifestyle factors
+                </p>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;">Model</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">CKD-EPI 2021</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">KDIGO Heat Map</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class='info-box'>
-        Complete the clinical assessment form below. All fields are used to generate a personalised
-        Kidney Health Score and risk classification. Fields marked with * are required for accurate scoring.
-    </div>
-    """, unsafe_allow_html=True)
+    left_col, right_col = st.columns([1.1, 1.5])
 
-    with st.form("risk_form"):
-        # ---- Demographics ----
-        st.markdown("<div class='section-header'>👤 Patient Demographics</div>", unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            age = st.number_input("Age (years)*", min_value=18, max_value=100, value=55, step=1)
-            gender = st.selectbox("Gender*", ["Male", "Female"])
-        with c2:
-            weight = st.number_input("Weight (kg)*", min_value=30.0, max_value=200.0, value=72.0, step=0.5)
-            height = st.number_input("Height (cm)*", min_value=120.0, max_value=220.0, value=165.0, step=0.5)
-        with c3:
-            bmi_calc = calculate_bmi(weight, height)
-            bmi_cat, bmi_col = classify_bmi(bmi_calc)
-            st.metric("Calculated BMI", f"{bmi_calc}", f"{bmi_cat}")
-            st.markdown(f"<span style='color:{bmi_col}; font-size:0.8rem;'>●</span> {bmi_cat}", unsafe_allow_html=True)
+    with left_col:
+        with st.form("risk_form"):
+            st.markdown('<div class="section-title-accent"><span>\U0001f464</span> Demographics</div>', unsafe_allow_html=True)
+            c1, c2 = st.columns(2)
+            with c1:
+                age = st.number_input("Age (years)", 18, 100, 58)
+            with c2:
+                gender = st.selectbox("Sex", ["Male", "Female"])
 
-        st.markdown("<br>", unsafe_allow_html=True)
+            c3, c4 = st.columns(2)
+            with c3:
+                weight = st.number_input("Weight (kg)", 30.0, 200.0, 72.0, 0.5)
+            with c4:
+                height = st.number_input("Height (cm)", 130, 220, 168)
 
-        # ---- Comorbidities ----
-        st.markdown("<div class='section-header'>🏥 Comorbidities & Risk Factors</div>", unsafe_allow_html=True)
-        c4, c5 = st.columns(2)
-        with c4:
-            diabetes = st.checkbox("Diabetes Mellitus", value=True)
-            hypertension = st.checkbox("Hypertension", value=True)
-            smoking = st.checkbox("Active Smoking", value=False)
-        with c5:
-            alcohol = st.checkbox("Alcohol Use", value=False)
-            family_history = st.checkbox("Family History of CKD/Kidney Disease", value=False)
+            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f9ea</span> Laboratory Values</div>', unsafe_allow_html=True)
+            c5, c6 = st.columns(2)
+            with c5:
+                egfr = st.number_input("eGFR (mL/min/1.73m²)", 1, 150, 38)
+            with c6:
+                creatinine = st.number_input("Creatinine (mg/dL)", 0.4, 15.0, 2.1, 0.1)
 
-        # BP fields
-        st.markdown("<br>", unsafe_allow_html=True)
-        bp_c1, bp_c2, hba1c_c = st.columns(3)
-        with bp_c1:
-            systolic_bp = st.number_input("Systolic BP (mmHg)", min_value=80, max_value=250, value=145, step=1)
-        with bp_c2:
-            diastolic_bp = st.number_input("Diastolic BP (mmHg)", min_value=40, max_value=150, value=90, step=1)
-        with hba1c_c:
-            hba1c = st.number_input("HbA1c (%)", min_value=4.0, max_value=20.0, value=8.2, step=0.1,
-                                    help="Glycated haemoglobin — leave at 0 if not diabetic or unavailable")
+            c7, c8 = st.columns(2)
+            with c7:
+                albumin_label = st.selectbox("Urine Albumin (UACR)", list(ALBUMIN_MAP.keys()))
+            with c8:
+                hba1c = st.number_input("HbA1c (%) — if diabetic", 4.0, 15.0, 7.8, 0.1)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+            c_bp1, c_bp2 = st.columns(2)
+            with c_bp1:
+                sbp = st.number_input("Systolic BP (mmHg)", 90, 220, 148)
+            with c_bp2:
+                dbp = st.number_input("Diastolic BP (mmHg)", 50, 140, 92)
 
-        # ---- Lab Values ----
-        st.markdown("<div class='section-header'>🧪 Laboratory Values</div>", unsafe_allow_html=True)
-        l1, l2, l3 = st.columns(3)
-        with l1:
-            creatinine = st.number_input("Serum Creatinine (mg/dL)*", min_value=0.3, max_value=20.0,
-                                          value=2.1, step=0.1)
-        with l2:
-            egfr = st.number_input("eGFR (mL/min/1.73m²)*", min_value=1.0, max_value=120.0,
-                                    value=35.0, step=0.5,
-                                    help="Use CKD-EPI 2021 equation. eGFR calculators available at mdcalc.com")
-        with l3:
-            albuminuria = st.selectbox("Albuminuria*", ["None", "Microalbuminuria", "Macroalbuminuria"],
-                                       help="Microalbuminuria: 30-300 mg/g; Macroalbuminuria: >300 mg/g")
+            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f3e5</span> Comorbidities</div>', unsafe_allow_html=True)
+            ca, cb = st.columns(2)
+            with ca:
+                diabetes     = st.checkbox("Diabetes Mellitus", value=True)
+                hypertension = st.checkbox("Hypertension", value=True)
+                smoking      = st.checkbox("Current Smoker")
+            with cb:
+                alcohol      = st.checkbox("Regular Alcohol Use")
+                family_hx    = st.checkbox("Family History of CKD")
 
-        st.markdown("<br>", unsafe_allow_html=True)
+            submitted = st.form_submit_button(
+                "\U0001f50d  Calculate Risk Score",
+                use_container_width=True,
+                type="primary",
+            )
 
-        submit = st.form_submit_button("🔍 Analyse Kidney Risk", use_container_width=True)
-
-    if submit:
-        with st.spinner("Running clinical risk analysis..."):
+    with right_col:
+        if submitted:
+            bmi = weight / ((height / 100) ** 2)
             inp = RiskInput(
-                age=age, gender=gender, weight_kg=weight, height_cm=height, bmi=bmi_calc,
-                diabetes=diabetes, hypertension=hypertension, smoking=smoking, alcohol=alcohol,
-                family_history=family_history,
-                serum_creatinine=creatinine, egfr=egfr, albuminuria=albuminuria,
-                hba1c=hba1c if hba1c > 4.0 else None,
-                systolic_bp=systolic_bp, diastolic_bp=diastolic_bp,
+                age=float(age),
+                gender=gender,
+                weight_kg=float(weight),
+                height_cm=float(height),
+                bmi=round(bmi, 1),
+                diabetes=diabetes,
+                hypertension=hypertension,
+                smoking=smoking,
+                alcohol=alcohol,
+                family_history=family_hx,
+                serum_creatinine=float(creatinine),
+                egfr=float(egfr),
+                albuminuria=ALBUMIN_MAP[albumin_label],
+                hba1c=float(hba1c) if diabetes else None,
+                systolic_bp=float(sbp),
+                diastolic_bp=float(dbp),
             )
             result = calculate_risk(inp)
-
-        # Save to session
-        st.session_state["risk_result"] = result
-        st.session_state["risk_input"] = inp
-
-        # ---- Results ----
-        st.markdown("---")
-        st.markdown("## 📊 Risk Assessment Results")
-
-        # Top metrics
-        cat = result.risk_category
-        badge_class = {"Low": "badge-low", "Moderate": "badge-mod", "High": "badge-high", "Critical": "badge-crit"}.get(cat, "badge-mod")
-        risk_icon = {"Low": "✅", "Moderate": "⚠️", "High": "🔶", "Critical": "🚨"}.get(cat, "⚠️")
-
-        m1, m2, m3, m4 = st.columns(4)
-        with m1:
-            st.markdown(f"""
-            <div class='metric-card' style='border-left-color: #27ae60;'>
-                <p>Kidney Health Score</p>
-                <h3 style='color:#27ae60;'>{result.kidney_health_score}</h3>
-                <span style='font-size:0.75rem; color:#718096;'>out of 100</span>
-            </div>""", unsafe_allow_html=True)
-        with m2:
-            st.markdown(f"""
-            <div class='metric-card' style='border-left-color: #e74c3c;'>
-                <p>Risk Score</p>
-                <h3 style='color:#e74c3c;'>{result.risk_score}</h3>
-                <span style='font-size:0.75rem; color:#718096;'>out of 100</span>
-            </div>""", unsafe_allow_html=True)
-        with m3:
-            st.markdown(f"""
-            <div class='metric-card'>
-                <p>Risk Classification</p>
-                <h3 style='font-size:1.3rem;'>{risk_icon} {cat}</h3>
-                <span class='{badge_class}'>{cat}</span>
-            </div>""", unsafe_allow_html=True)
-        with m4:
-            st.markdown(f"""
-            <div class='metric-card'>
-                <p>CKD Stage</p>
-                <h3 style='font-size:1.2rem;'>{result.ckd_stage_num}</h3>
-                <span style='font-size:0.75rem; color:#718096;'>{result.egfr_category}</span>
-            </div>""", unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # Charts row
-        ch1, ch2 = st.columns([1, 1])
-        with ch1:
-            st.plotly_chart(risk_gauge(result.risk_score, "Kidney Risk Score"), use_container_width=True)
-        with ch2:
-            st.plotly_chart(risk_gauge(100 - result.kidney_health_score, "Health Burden"), use_container_width=True)
-
-        # CKD Stage card
-        stage_colors = {
-            "G1": "#27ae60", "G2": "#2ecc71", "G3a": "#f39c12",
-            "G3b": "#e67e22", "G4": "#e74c3c", "G5": "#8e44ad",
-        }
-        stage_color = stage_colors.get(result.ckd_stage_num, "#2980b9")
-        st.markdown(f"""
-        <div style='background:{stage_color}22; border:2px solid {stage_color}; border-radius:10px;
-                    padding:1rem 1.5rem; margin:0.5rem 0;'>
-            <div style='font-size:0.8rem; color:#4a5568; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;'>
-                CKD Classification
-            </div>
-            <div style='font-size:1.5rem; font-weight:700; color:{stage_color};'>{result.ckd_stage}</div>
-            <div style='font-size:0.85rem; color:#4a5568;'>eGFR: {egfr:.1f} mL/min/1.73m² — {result.egfr_category}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Clinical summary
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📝 Clinical Summary")
-        st.markdown(f"""
-        <div style='background:white; border-radius:10px; padding:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-                    border-left:4px solid {stage_color};'>
-            {result.clinical_summary}
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Contributing factors
-        if result.contributing_factors:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### ⚡ Contributing Risk Factors")
-            st.plotly_chart(risk_factor_bar(result.contributing_factors), use_container_width=True)
-
-            for factor in result.contributing_factors:
-                impact = factor.get("impact", "Low")
-                impact_color = {"High": "#e74c3c", "Moderate": "#f39c12", "Low": "#3498db", "Critical": "#8e44ad"}.get(impact, "#95a5a6")
-                st.markdown(f"""
-                <div style='background:white; border-radius:8px; padding:0.7rem 1rem; margin-bottom:0.4rem;
-                            box-shadow:0 1px 4px rgba(0,0,0,0.06); border-left:3px solid {impact_color};
-                            display:flex; align-items:center; gap:1rem;'>
-                    <div style='flex:1;'>
-                        <span style='font-weight:600; color:#1e3a5f;'>{factor["factor"]}</span>
-                        <span style='color:#718096; font-size:0.85rem; margin-left:0.5rem;'>— {factor.get("value","")}</span>
-                    </div>
-                    <span style='background:{impact_color}22; color:{impact_color}; padding:2px 10px;
-                                 border-radius:12px; font-size:0.78rem; font-weight:600;'>{impact}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                if factor.get("detail"):
-                    st.markdown(f"<div style='font-size:0.8rem; color:#718096; margin:-0.2rem 0 0.4rem 1rem;'>{factor['detail']}</div>", unsafe_allow_html=True)
-
-        # Recommendations
-        if result.recommendations:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("### 🎯 Clinical Recommendations")
-            st.markdown(f"""
-            <div style='background:#fffaf0; border:1px solid #fbd38d; border-radius:10px; padding:1rem 1.2rem;'>
-                <div style='font-weight:600; color:#d69e2e; margin-bottom:0.5rem;'>
-                    ⚠️ {result.monitoring_priority}
-                </div>
+            st.session_state.risk_result = result
+            _render_results(result, egfr, bmi)
+        elif st.session_state.get("risk_result"):
+            st.markdown("""
+            <div class="alert alert-info" style="margin-bottom:0.8rem;">
+                Showing previous assessment — adjust inputs and re-run to update.
             </div>
             """, unsafe_allow_html=True)
-            for i, rec in enumerate(result.recommendations, 1):
-                st.markdown(f"""
-                <div style='background:white; border-radius:8px; padding:0.6rem 1rem; margin:0.3rem 0;
-                            box-shadow:0 1px 4px rgba(0,0,0,0.05); display:flex; gap:0.8rem; align-items:flex-start;'>
-                    <span style='background:#2980b9; color:white; border-radius:50%; width:20px; height:20px;
-                                 display:flex; align-items:center; justify-content:center; font-size:0.7rem;
-                                 font-weight:700; flex-shrink:0;'>{i}</span>
-                    <span style='font-size:0.87rem; color:#2d3748;'>{rec}</span>
+            _render_placeholder()
+        else:
+            _render_placeholder()
+
+
+def _render_results(result, egfr, bmi):
+    risk = result.risk_category.upper()
+    color, bg, text_color = RISK_CONFIG.get(risk, RISK_CONFIG["MODERATE"])
+
+    # ── Risk banner ────────────────────────────────────────────────────────
+    stage_num = result.ckd_stage_num
+    st.markdown(f"""
+    <div style="background:{bg};border:2px solid {color};border-radius:14px;
+                padding:1.2rem 1.5rem;margin-bottom:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-size:0.72rem;font-weight:700;color:{color};
+                            letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;">
+                    CKD Risk Level
                 </div>
-                """, unsafe_allow_html=True)
+                <div style="font-size:1.6rem;font-weight:900;color:{color};">{risk} RISK</div>
+                <div style="font-size:0.83rem;color:#334155;margin-top:0.3rem;">
+                    CKD Stage <strong>{stage_num}</strong> &bull;
+                    eGFR <strong>{egfr} mL/min</strong> &bull;
+                    BMI <strong>{bmi:.1f}</strong>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:2.5rem;font-weight:900;color:{color};">{result.risk_score:.0f}</div>
+                <div style="font-size:0.7rem;font-weight:700;color:{color};letter-spacing:0.06em;text-transform:uppercase;">/ 100</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        # eGFR trend
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📈 eGFR Reference Trend")
-        st.plotly_chart(egfr_trend_placeholder(), use_container_width=True)
-        st.caption("Sample eGFR trend for reference. Connect to longitudinal patient data for personalised trend analysis.")
+    # ── Gauge chart ────────────────────────────────────────────────────────
+    try:
+        fig = risk_gauge(result.risk_score, result.risk_category)
+        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    except Exception:
+        pass
 
-        # Navigate to report
-        st.markdown("---")
-        st.markdown("""
-        <div class='success-box'>
-            ✅ Risk assessment complete. Navigate to <b>Report Generator</b> to include this analysis in a full clinical PDF report.
+    # ── CKD Stage badge ────────────────────────────────────────────────────
+    if stage_num in CKD_STAGE_DESC:
+        s_label, s_range, s_color = CKD_STAGE_DESC[stage_num]
+        st.markdown(f"""
+        <div style="background:white;border:1px solid #E2E8F0;border-radius:10px;
+                    padding:0.9rem 1.1rem;margin-bottom:0.8rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div style="font-size:0.72rem;font-weight:700;color:#64748B;
+                                letter-spacing:0.06em;text-transform:uppercase;">CKD Classification</div>
+                    <div style="font-size:1.1rem;font-weight:800;color:#0F172A;">
+                        Stage {stage_num} — {s_label}
+                    </div>
+                </div>
+                <div style="background:{s_color}15;border:1px solid {s_color}40;border-radius:8px;
+                            padding:5px 14px;font-size:0.82rem;font-weight:700;color:{s_color};">
+                    eGFR {s_range}
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("📋 Generate Clinical Report →", use_container_width=True):
-            st.session_state.current_page = "Report"
-            st.rerun()
-    else:
-        # Placeholder state
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style='background:white; border-radius:12px; padding:3rem; text-align:center;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-            <div style='font-size:3rem; margin-bottom:1rem;'>🫀</div>
-            <h3 style='color:#1e3a5f;'>Complete the Assessment Form</h3>
-            <p style='color:#718096; font-size:0.9rem;'>
-                Fill in the clinical parameters above and click <b>Analyse Kidney Risk</b>
-                to generate an AI-powered kidney risk assessment.
-            </p>
+    # ── Contributing factors chart ─────────────────────────────────────────
+    if result.contributing_factors:
+        factor_scores = {}
+        for f in result.contributing_factors:
+            name  = f.get("factor", "Unknown")
+            impact = f.get("impact", "Moderate")
+            factor_scores[name] = IMPACT_SCORE.get(impact, 8)
+        try:
+            fig2 = risk_factor_bar(factor_scores)
+            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+        except Exception:
+            pass
+
+    # ── Recommendations ────────────────────────────────────────────────────
+    if result.recommendations:
+        st.markdown('<div class="section-title"><span>\U0001f4cb</span> Clinical Recommendations</div>', unsafe_allow_html=True)
+        for i, rec in enumerate(result.recommendations, 1):
+            p_color = "#EF4444" if i <= 2 else ("#F59E0B" if i <= 4 else "#64748B")
+            p_label = "HIGH" if i <= 2 else ("MODERATE" if i <= 4 else "ROUTINE")
+            st.markdown(f"""
+            <div style="background:white;border:1px solid #E2E8F0;border-radius:8px;
+                        padding:0.75rem 1rem;margin-bottom:0.4rem;
+                        border-left:3px solid {p_color};display:flex;gap:10px;align-items:flex-start;">
+                <div style="background:{p_color}20;color:{p_color};font-size:0.65rem;font-weight:800;
+                            padding:2px 7px;border-radius:4px;letter-spacing:0.05em;
+                            flex-shrink:0;margin-top:1px;">{p_label}</div>
+                <div style="font-size:0.84rem;color:#334155;line-height:1.5;">{rec}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+
+def _render_placeholder():
+    st.markdown("""
+    <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
+                padding:3rem;text-align:center;margin-top:0.5rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">❤️</div>
+        <div style="font-size:1rem;font-weight:700;color:#0F172A;margin-bottom:0.5rem;">
+            Kidney Risk Assessment
         </div>
-        """, unsafe_allow_html=True)
+        <div style="font-size:0.84rem;color:#64748B;max-width:380px;margin:0 auto;line-height:1.6;">
+            Enter patient demographics, laboratory values, and comorbidities to generate
+            a comprehensive CKD risk stratification using the KDIGO 2024 heat map model.
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <span style="background:#FEE2E2;color:#991B1B;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">eGFR-Based Staging</span>
+            <span style="background:#EFF6FF;color:#1E40AF;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">Albuminuria Category</span>
+            <span style="background:#F0FDF4;color:#065F46;font-size:0.78rem;font-weight:600;
+                         padding:5px 12px;border-radius:8px;">Risk Score 0-100</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)

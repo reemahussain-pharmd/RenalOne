@@ -4,166 +4,190 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
-from rag.engine import get_rag_engine, BUILT_IN_KNOWLEDGE
+from rag.engine import get_rag_engine
 
 
-EXAMPLE_QUESTIONS = [
-    "What are the KDIGO blood pressure targets for CKD patients?",
-    "What evidence supports SGLT2 inhibitors in CKD?",
-    "Should metformin be used in patients with eGFR below 45?",
-    "What dietary recommendations are advised for CKD Stage 3 patients?",
-    "How should anaemia be managed in CKD?",
-    "What are the risks of dual RAAS blockade in CKD?",
-    "How does CKD affect bone mineral metabolism?",
-    "What is the economic burden of hemodialysis in India?",
+EXAMPLE_QUERIES = [
+    "What are the KDIGO CKD staging criteria?",
+    "How often should eGFR be monitored in CKD G3b?",
+    "What blood pressure targets are recommended for CKD patients?",
+    "When should ACE inhibitors be used in diabetic nephropathy?",
+    "What are the dietary protein recommendations for non-dialysis CKD?",
+    "How does albuminuria affect CKD prognosis?",
 ]
 
 
 def render():
     st.markdown("""
-    <div style='background: linear-gradient(135deg, #0d5c4a, #16a085);
-                border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>🔬 Clinical Evidence Intelligence</h2>
-        <p style='color:#a7f3d0; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            RAG-powered nephrology knowledge base · KDIGO Guidelines · Research Evidence
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class='info-box'>
-        <b>⚕️ Disclaimer:</b> This system provides evidence-based insights and does not replace clinical judgment.
-        All clinical decisions must be made by qualified healthcare professionals.
-    </div>
-    """, unsafe_allow_html=True)
-
-    rag = get_rag_engine()
-
-    # Layout
-    left, right = st.columns([1.6, 1])
-
-    with right:
-        st.markdown("### 📚 Knowledge Base")
-        st.markdown(f"""
-        <div style='background:white; border-radius:10px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);'>
-            <div style='display:flex; justify-content:space-between; margin-bottom:0.8rem;'>
-                <span style='font-size:0.85rem; font-weight:600; color:#1e3a5f;'>Built-in KDIGO Articles</span>
-                <span style='background:#d5f5e3; color:#1e8449; padding:2px 8px; border-radius:10px; font-size:0.75rem;'>
-                    {len(BUILT_IN_KNOWLEDGE)} sources
-                </span>
+    <div class="page-header">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+                    <span style="font-size:1.5rem;">\U0001f50d</span>
+                    <span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);
+                                 font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;
+                                 letter-spacing:0.06em;">RAG-POWERED SEARCH</span>
+                </div>
+                <h1 style="color:white !important;font-size:1.7rem !important;font-weight:800 !important;
+                           margin:0 0 0.3rem 0 !important;">Clinical Evidence Intelligence</h1>
+                <p style="color:rgba(255,255,255,0.72) !important;font-size:0.88rem !important;margin:0 !important;">
+                    KDIGO 2024 guidelines &bull; FAISS semantic search &bull; GPT-4o synthesis
+                </p>
             </div>
+            <div style="text-align:right;">
+                <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;">Knowledge Base</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">13 KDIGO Articles</div>
+                <div style="font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;">FAISS + GPT-4o</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    left_col, right_col = st.columns([1.5, 1])
+
+    with left_col:
+        # ── Query Input ────────────────────────────────────────────────────
+        st.markdown("""
+        <div class="rc-card" style="margin-bottom:1rem;">
+            <div class="section-title"><span>\U0001f4ac</span> Clinical Query</div>
         """, unsafe_allow_html=True)
-        for item in BUILT_IN_KNOWLEDGE[:6]:
-            st.markdown(f"""
-            <div style='padding:0.4rem 0; border-bottom:1px solid #f0f0f0;'>
-                <div style='font-size:0.8rem; font-weight:600; color:#2980b9;'>{item["title"]}</div>
-                <div style='font-size:0.72rem; color:#718096;'>{item["source"]}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        # PDF upload
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📄 Upload Research Papers")
-        uploaded = st.file_uploader(
-            "Upload PDF (clinical guidelines, research papers)",
-            type=["pdf"],
-            help="Upload PDF files to expand the knowledge base",
-        )
-        if uploaded:
-            with st.spinner("Processing PDF..."):
-                n = rag.add_pdf(uploaded.read(), uploaded.name)
-            if n > 0:
-                st.success(f"✅ Added {n} text segments from '{uploaded.name}'")
-            else:
-                st.warning("Could not extract text. Ensure PDF contains selectable text.")
-
-        if rag.has_uploaded_documents():
-            st.markdown("""
-            <div style='background:#d5f5e3; border-radius:8px; padding:0.5rem 0.8rem; font-size:0.8rem; color:#1e8449;'>
-                📂 Custom documents loaded into knowledge base
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Example questions
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 💡 Example Questions")
-        for q in EXAMPLE_QUESTIONS[:5]:
-            if st.button(q, key=f"eg_{q[:20]}", use_container_width=True):
-                st.session_state["rag_query"] = q
-                st.rerun()
-
-    with left:
-        st.markdown("### 🔍 Ask a Clinical Question")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         query = st.text_area(
-            "Enter your clinical question",
-            value=st.session_state.get("rag_query", ""),
+            "Ask a clinical question:",
+            placeholder="e.g. 'What are KDIGO recommendations for CKD blood pressure targets?'",
             height=100,
-            placeholder="e.g. What are the KDIGO recommendations for blood pressure targets in CKD patients with diabetes?",
+            label_visibility="collapsed",
         )
 
-        if "rag_query" in st.session_state:
-            del st.session_state["rag_query"]
+        run_col, clear_col = st.columns([2, 1])
+        with run_col:
+            search_clicked = st.button("\U0001f50d  Search Clinical Evidence", type="primary", use_container_width=True)
+        with clear_col:
+            if st.button("Clear", use_container_width=True):
+                st.session_state.pop("rag_result", None)
+                st.rerun()
 
-        col_btn1, col_btn2 = st.columns([1, 4])
-        with col_btn1:
-            search_clicked = st.button("🔍 Search", type="primary", use_container_width=True)
-
+        # ── Results ────────────────────────────────────────────────────────
         if search_clicked and query.strip():
-            with st.spinner("Retrieving clinical evidence..."):
-                result = rag.answer_query(query.strip())
+            with st.spinner("Searching KDIGO knowledge base..."):
+                engine = get_rag_engine()
+                result = engine.answer_query(query)
+                st.session_state.rag_result = result
 
-            st.session_state["evidence_result"] = result
-            st.markdown("---")
-            st.markdown("### 📋 Evidence Summary")
-
-            # Source cards
-            sources = result.get("sources", [])
-            if sources:
-                st.markdown(f"<div style='font-size:0.8rem; color:#718096; margin-bottom:0.5rem;'>📚 Retrieved {len(sources)} relevant source(s) {'using semantic search' if result.get('vector_search_used') else 'using keyword matching'}</div>", unsafe_allow_html=True)
-                for i, src in enumerate(sources, 1):
-                    with st.expander(f"[{i}] {src.get('title', 'Source')} — {src.get('source', '')}"):
-                        st.markdown(f"<div style='font-size:0.85rem; color:#4a5568; line-height:1.6;'>{src['text']}</div>", unsafe_allow_html=True)
-
-            # AI answer
-            st.markdown("<br>", unsafe_allow_html=True)
-            ai_answer = result.get("answer", "")
-            if ai_answer:
-                st.markdown(f"""
-                <div style='background:white; border-radius:10px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-                            border-left:4px solid #16a085; line-height:1.7;'>
-                """, unsafe_allow_html=True)
-                st.markdown(ai_answer)
-                st.markdown("</div>", unsafe_allow_html=True)
-
-        elif search_clicked and not query.strip():
-            st.warning("Please enter a clinical question.")
+        if st.session_state.get("rag_result"):
+            result = st.session_state.rag_result
+            _render_answer(result)
 
         elif not search_clicked:
-            # Welcome state
             st.markdown("""
-            <div style='background:white; border-radius:12px; padding:2rem; text-align:center;
-                        box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-top:1rem;'>
-                <div style='font-size:2.5rem; margin-bottom:0.8rem;'>🔬</div>
-                <h4 style='color:#1e3a5f;'>Nephrology Evidence Engine</h4>
-                <p style='color:#718096; font-size:0.88rem; line-height:1.6;'>
-                    Ask any clinical question about CKD management, medications, nutrition,
-                    or dialysis. The system retrieves evidence from the built-in KDIGO knowledge
-                    base and any PDFs you upload.
-                </p>
-                <div style='display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-top:1rem;'>
-                    <span style='background:#e8f4fd; color:#2980b9; padding:4px 12px; border-radius:12px; font-size:0.78rem;'>KDIGO 2024</span>
-                    <span style='background:#e8f4fd; color:#2980b9; padding:4px 12px; border-radius:12px; font-size:0.78rem;'>SGLT2i Evidence</span>
-                    <span style='background:#e8f4fd; color:#2980b9; padding:4px 12px; border-radius:12px; font-size:0.78rem;'>Drug Safety</span>
-                    <span style='background:#e8f4fd; color:#2980b9; padding:4px 12px; border-radius:12px; font-size:0.78rem;'>Nutrition</span>
-                    <span style='background:#e8f4fd; color:#2980b9; padding:4px 12px; border-radius:12px; font-size:0.78rem;'>Economic Burden</span>
+            <div style="background:#F8FAFC;border:2px dashed #E2E8F0;border-radius:12px;
+                        padding:2.5rem;text-align:center;margin-top:0.5rem;">
+                <div style="font-size:2.5rem;margin-bottom:0.8rem;">\U0001f50d</div>
+                <div style="font-size:0.9rem;font-weight:600;color:#0F172A;margin-bottom:0.4rem;">
+                    Query the Clinical Knowledge Base
+                </div>
+                <div style="font-size:0.83rem;color:#64748B;max-width:380px;margin:0 auto;line-height:1.6;">
+                    Ask any question about CKD management, KDIGO guidelines, monitoring protocols,
+                    or treatment recommendations.
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-        # Previous result
-        if "evidence_result" in st.session_state and not search_clicked:
-            prev = st.session_state["evidence_result"]
-            st.markdown("---")
-            st.markdown(f"<div style='font-size:0.8rem; color:#718096;'>Last query: <i>{prev['query']}</i></div>", unsafe_allow_html=True)
+    with right_col:
+        # ── Knowledge base cards ───────────────────────────────────────────
+        st.markdown("""
+        <div class="rc-card">
+            <div class="section-title"><span>\U0001f4da</span> Knowledge Base</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
+                <span style="background:#D1FAE5;color:#065F46;font-size:0.72rem;font-weight:700;
+                             padding:3px 10px;border-radius:20px;">13 KDIGO Articles</span>
+                <span style="background:#EFF6FF;color:#1D4ED8;font-size:0.72rem;font-weight:700;
+                             padding:3px 10px;border-radius:20px;">Always Available</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+        topics = [
+            "\U0001f3e5 CKD Definition & Classification",
+            "\U0001f4ca Risk Stratification Heat Map",
+            "\U0001f9ea eGFR Monitoring Frequency",
+            "\U0001f48a Blood Pressure Management",
+            "\U0001f52c Albuminuria & Proteinuria",
+            "\U0001f966 Dietary Interventions",
+            "\U0001f489 Diabetes & CKD",
+            "\U0001f4c8 CKD Progression Markers",
+            "\U0001f9b8 Anemia in CKD",
+            "\U0001f9b4 Mineral Bone Disorder",
+            "\U0001f4dd Referral Guidelines",
+            "\U0001fa78 Dialysis Initiation",
+            "\U0001f4b0 Pharmacoeconomic Burden",
+        ]
+        for t in topics:
+            st.markdown(f'<div style="font-size:0.81rem;color:#374151;padding:4px 0;border-bottom:1px solid #F1F5F9;">{t}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+
+        # ── Example questions ──────────────────────────────────────────────
+        st.markdown("""
+        <div class="rc-card">
+            <div class="section-title"><span>\U0001f4a1</span> Example Queries</div>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        for i, q in enumerate(EXAMPLE_QUERIES):
+            if st.button(q, key=f"ex_{i}", use_container_width=True):
+                with st.spinner("Searching..."):
+                    engine = get_rag_engine()
+                    result = engine.answer_query(q)
+                    st.session_state.rag_result = result
+                    st.rerun()
+
+
+def _render_answer(result):
+    if isinstance(result, dict):
+        answer   = result.get("answer", "")
+        sources  = result.get("sources", [])
+        n_sources = len(sources)
+    else:
+        answer   = str(result)
+        sources  = []
+        n_sources = 0
+
+    st.markdown(f"""
+    <div style="margin-top:0.8rem;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
+            <span style="background:#D1FAE5;color:#065F46;font-size:0.72rem;font-weight:700;
+                         padding:3px 10px;border-radius:20px;">&#x2713; Answer Ready</span>
+            <span style="background:#EFF6FF;color:#1D4ED8;font-size:0.72rem;font-weight:700;
+                         padding:3px 10px;border-radius:20px;">{n_sources} sources cited</span>
+        </div>
+        <div style="background:linear-gradient(135deg,#EEF2FF 0%,#F0FDF4 100%);border-radius:12px;
+                    padding:1.3rem;border:1px solid #C7D2FE;margin-bottom:0.8rem;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;">
+                <span style="font-size:1rem;">\U0001f916</span>
+                <span style="font-size:0.85rem;font-weight:700;color:#3730A3;">AI Clinical Response</span>
+                <span style="background:#EEF2FF;color:#6366F1;font-size:0.65rem;font-weight:700;
+                             padding:2px 8px;border-radius:20px;letter-spacing:0.05em;">GPT-4o</span>
+            </div>
+            <div style="font-size:0.87rem;color:#1E293B;line-height:1.72;">
+                {answer.replace(chr(10), '<br>')}
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if sources:
+        st.markdown('<div class="section-title"><span>\U0001f4da</span> Source Articles</div>', unsafe_allow_html=True)
+        for src in sources[:4]:
+            title   = src.get("title", "KDIGO Clinical Article") if isinstance(src, dict) else str(src)
+            snippet = src.get("snippet", "")          if isinstance(src, dict) else ""
+            st.markdown(f"""
+            <div style="background:white;border:1px solid #E2E8F0;border-radius:8px;
+                        padding:0.8rem 1rem;margin-bottom:0.4rem;border-left:3px solid #3B82F6;">
+                <div style="font-size:0.83rem;font-weight:700;color:#0F172A;margin-bottom:0.3rem;">
+                    \U0001f4c4 {title}
+                </div>
+                {f'<div style="font-size:0.79rem;color:#64748B;line-height:1.5;">{snippet[:200]}...</div>' if snippet else ''}
+            </div>
+            """, unsafe_allow_html=True)

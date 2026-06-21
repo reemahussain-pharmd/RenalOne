@@ -5,349 +5,294 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 from datetime import datetime
-from reports.generator import generate_report, REPORTLAB_AVAILABLE
-from dataclasses import asdict
-
-
-def _to_dict(obj):
-    """Convert dataclass or plain dict to dict safely."""
-    if obj is None:
-        return {}
-    if isinstance(obj, dict):
-        return obj
-    try:
-        return asdict(obj)
-    except Exception:
-        return obj.__dict__ if hasattr(obj, "__dict__") else {}
 
 
 def render():
     st.markdown("""
-    <div style='background: linear-gradient(135deg, #7b0000, #c0392b);
-                border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem;'>
-        <h2 style='color:white; margin:0; font-size:1.5rem;'>📋 AI Renal Report Generator</h2>
-        <p style='color:#fadbd8; margin:0.3rem 0 0 0; font-size:0.88rem;'>
-            Generate comprehensive, professional-grade PDF clinical reports
-        </p>
+    <div class="page-header">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+                    <span style="font-size:1.5rem;">\U0001f4c4</span>
+                    <span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);
+                                 font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;
+                                 letter-spacing:0.06em;">PDF REPORT ENGINE</span>
+                </div>
+                <h1 style="color:white !important;font-size:1.7rem !important;font-weight:800 !important;
+                           margin:0 0 0.3rem 0 !important;">Clinical Report Generator</h1>
+                <p style="color:rgba(255,255,255,0.72) !important;font-size:0.88rem !important;margin:0 !important;">
+                    Aggregate assessments into a professional PDF report for clinical records
+                </p>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    if not REPORTLAB_AVAILABLE:
-        st.warning("⚠️ ReportLab is not installed. Install it with: `pip install reportlab`")
+    # ── Data availability check ────────────────────────────────────────────
+    risk_data = st.session_state.get("risk_result")
+    med_data  = st.session_state.get("med_result")
+    econ_data = st.session_state.get("econ_result")
 
-    # Session data status
-    has_risk = "risk_result" in st.session_state
-    has_med = "medication_result" in st.session_state
-    has_econ = "economic_result" in st.session_state
+    has_any = any([risk_data, med_data, econ_data])
 
-    st.markdown("### 📊 Available Data")
-    sc1, sc2, sc3 = st.columns(3)
-    with sc1:
-        if has_risk:
-            r = st.session_state["risk_result"]
+    left_col, right_col = st.columns([1.1, 1.5])
+
+    with left_col:
+        # ── Data status panel ──────────────────────────────────────────────
+        st.markdown("""
+        <div class="rc-card">
+            <div class="section-title"><span>\U0001f4cb</span> Available Assessment Data</div>
+        """, unsafe_allow_html=True)
+
+        modules_status = [
+            ("Kidney Risk Assessment", risk_data, "Risk",       "\U0001f9e0"),
+            ("Medication Intelligence", med_data,  "Medication", "\U0001f48a"),
+            ("Pharmacoeconomics",      econ_data,  "Economics",  "\U0001f4ca"),
+        ]
+
+        for name, data, page_key, icon in modules_status:
+            has = data is not None
+            color = "#10B981" if has else "#CBD5E1"
+            bg    = "#D1FAE5" if has else "#F8FAFC"
+            label = "Data Available" if has else "Not Completed"
             st.markdown(f"""
-            <div class='success-box'>
-                ✅ <b>Kidney Risk Assessment</b><br>
-                <span style='font-size:0.82rem;'>Risk: {r.risk_category} · Score: {r.risk_score}/100 · {r.ckd_stage}</span>
+            <div style="background:{bg};border:1px solid {color}30;border-radius:8px;
+                        padding:0.7rem 0.9rem;margin-bottom:0.5rem;
+                        display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:1rem;">{icon}</span>
+                    <span style="font-size:0.84rem;font-weight:600;color:#0F172A;">{name}</span>
+                </div>
+                <span style="font-size:0.72rem;font-weight:700;color:{color};
+                             background:white;padding:3px 9px;border-radius:20px;
+                             border:1px solid {color}40;">
+                    {'&#x2713; ' if has else ''}{label}
+                </span>
             </div>
             """, unsafe_allow_html=True)
-        else:
+
+        if not has_any:
             st.markdown("""
-            <div class='warning-box'>
-                ⚠️ <b>Kidney Risk Assessment</b><br>
-                <span style='font-size:0.82rem;'>Not completed — go to Kidney Risk page</span>
-            </div>
-            """, unsafe_allow_html=True)
-    with sc2:
-        if has_med:
-            m = st.session_state["medication_result"]
-            st.markdown(f"""
-            <div class='success-box'>
-                ✅ <b>Medication Review</b><br>
-                <span style='font-size:0.82rem;'>Overall Risk: {m.overall_risk} · {len(m.flags)} flag(s)</span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div class='warning-box'>
-                ⚠️ <b>Medication Review</b><br>
-                <span style='font-size:0.82rem;'>Not completed — go to Medication page</span>
-            </div>
-            """, unsafe_allow_html=True)
-    with sc3:
-        if has_econ:
-            e = st.session_state["economic_result"]
-            st.markdown(f"""
-            <div class='success-box'>
-                ✅ <b>Economic Analysis</b><br>
-                <span style='font-size:0.82rem;'>Annual: ₹{e.total_annual:,.0f} · {e.financial_risk_category} Risk</span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div class='warning-box'>
-                ⚠️ <b>Economic Analysis</b><br>
-                <span style='font-size:0.82rem;'>Not completed — go to Pharmacoeconomics page</span>
+            <div class="alert alert-warning" style="margin-top:0.8rem;">
+                ⚠️ Complete at least one module assessment to generate a report.
             </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown("### ⚙️ Report Configuration")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    with st.form("report_form"):
-        r1, r2, r3 = st.columns(3)
-        with r1:
-            patient_name = st.text_input("Patient Name / ID", value="Patient Demo", placeholder="Enter patient name or anonymous ID")
-        with r2:
-            patient_age = st.number_input("Age (years)", min_value=18, max_value=100, value=55)
-        with r3:
-            patient_gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+        # ── Report config ──────────────────────────────────────────────────
+        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="rc-card">
+            <div class="section-title"><span>\U00002699</span> Report Configuration</div>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        report_date = st.date_input("Report Date", value=datetime.now())
-        report_type = st.selectbox("Report Type", ["Clinical Report (Doctor)", "Patient Summary", "Research Report"])
+        patient_name = st.text_input("Patient Name / ID", placeholder="e.g. Patient A or MRN-001")
+        provider     = st.text_input("Ordering Clinician", value="Dr. Reema Hussain, PharmD")
+        institution  = st.text_input("Institution", value="RenalCare AI Clinic")
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("**Include Sections:**")
-        inc1, inc2, inc3 = st.columns(3)
-        with inc1:
-            include_risk = st.checkbox("Kidney Risk Analysis", value=has_risk)
-            include_med = st.checkbox("Medication Review", value=has_med)
-        with inc2:
-            include_econ = st.checkbox("Economic Analysis", value=has_econ)
-            include_nutrition = st.checkbox("Nutrition Notes", value=False)
-        with inc3:
-            include_evidence = st.checkbox("Evidence Summary", value=False)
+        include_risk = st.checkbox("Include Risk Assessment",  value=bool(risk_data), disabled=not risk_data)
+        include_med  = st.checkbox("Include Medication Review", value=bool(med_data), disabled=not med_data)
+        include_econ = st.checkbox("Include Economic Analysis", value=bool(econ_data), disabled=not econ_data)
 
-        clinical_notes = st.text_area(
-            "Clinical Notes (optional)",
-            placeholder="Enter additional clinical observations, treatment plans, or notes for this patient report...",
-            height=100,
+        gen_btn = st.button(
+            "\U0001f4c4  Generate PDF Report",
+            type="primary",
+            use_container_width=True,
+            disabled=not has_any,
         )
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        gen_btn = st.form_submit_button("📋 Generate PDF Report", use_container_width=True)
+    with right_col:
+        if gen_btn and has_any:
+            _generate_report(
+                patient_name, provider, institution,
+                risk_data if include_risk else None,
+                med_data  if include_med  else None,
+                econ_data if include_econ else None,
+            )
+        elif has_any:
+            _render_preview(risk_data, med_data, econ_data)
+        else:
+            _render_empty_state()
 
-    if gen_btn:
-        # Build report data
+
+def _generate_report(patient_name, provider, institution, risk_data, med_data, econ_data):
+    try:
+        from reports.generator import generate_report
         report_data = {
             "patient_name": patient_name or "Anonymous",
-            "patient_age": patient_age,
-            "patient_gender": patient_gender,
-            "report_date": report_date.strftime("%d %B %Y"),
-            "report_type": report_type,
-            "clinical_notes": clinical_notes,
-            "include_evidence": include_evidence,
+            "provider": provider,
+            "institution": institution,
+            "date": datetime.now().strftime("%B %d, %Y"),
+            "risk_result": risk_data,
+            "med_result":  med_data,
+            "econ_result": econ_data,
         }
+        pdf_bytes = generate_report(report_data)
 
-        if include_risk and has_risk:
-            r = st.session_state["risk_result"]
-            report_data["risk_result"] = {
-                "kidney_health_score": r.kidney_health_score,
-                "risk_score": r.risk_score,
-                "risk_category": r.risk_category,
-                "ckd_stage": r.ckd_stage,
-                "ckd_stage_num": r.ckd_stage_num,
-                "egfr_category": r.egfr_category,
-                "contributing_factors": r.contributing_factors,
-                "recommendations": r.recommendations,
-                "clinical_summary": r.clinical_summary,
-                "monitoring_priority": r.monitoring_priority,
-            }
-
-        if include_med and has_med:
-            m = st.session_state["medication_result"]
-            report_data["medication_result"] = {
-                "overall_risk": m.overall_risk,
-                "flags": [{"drug": f.drug, "flag_type": f.flag_type, "severity": f.severity,
-                           "detail": f.detail, "action": f.action} for f in m.flags],
-                "monitoring_requirements": m.monitoring_requirements,
-                "ai_narrative": m.ai_narrative,
-            }
-
-        if include_econ and has_econ:
-            e = st.session_state["economic_result"]
-            report_data["economic_result"] = {
-                "direct_medical_annual": e.direct_medical_annual,
-                "direct_non_medical_annual": e.direct_non_medical_annual,
-                "indirect_annual": e.indirect_annual,
-                "total_annual": e.total_annual,
-                "income_burden_pct": e.income_burden_pct,
-                "financial_risk_category": e.financial_risk_category,
-                "financial_burden_score": e.financial_burden_score,
-                "ai_narrative": e.ai_narrative,
-            }
-
-        with st.spinner("Generating professional PDF report..."):
-            pdf_bytes = generate_report(report_data)
-
-        filename = f"RenalCare_Report_{patient_name.replace(' ', '_')}_{report_date.strftime('%Y%m%d')}.pdf"
-
-        st.success("✅ Report generated successfully!")
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # Download
+        fname = f"RenalCareAI_Report_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
         st.download_button(
-            label="⬇️ Download PDF Report",
+            label="\U0001f4e5  Download Clinical Report (PDF)",
             data=pdf_bytes,
-            file_name=filename,
+            file_name=fname,
             mime="application/pdf",
             use_container_width=True,
         )
 
-        # Preview
-        st.markdown("---")
-        st.markdown("### 📄 Report Preview")
-        _render_report_preview(report_data)
-
-    else:
-        st.markdown("<br>", unsafe_allow_html=True)
-        if not (has_risk or has_med or has_econ):
-            st.markdown("""
-            <div class='info-box'>
-                💡 <b>Get started:</b> Complete at least one of the assessment modules
-                (Kidney Risk, Medication Review, or Pharmacoeconomics) to generate a report.
-                Your results will automatically appear here.
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div class='success-box'>
-                ✅ Data from completed modules is ready. Configure report options above and click
-                <b>Generate PDF Report</b> to create your clinical report.
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Sample report preview
-        st.markdown("### 👁️ Sample Report Structure")
-        sections = [
-            ("📋", "Patient Summary", "Demographics, report date, ID"),
-            ("🫀", "Kidney Risk Analysis", "Risk score, CKD stage, contributing factors, recommendations"),
-            ("💊", "Medication Intelligence Review", "Drug safety flags, monitoring requirements, pharmacist notes"),
-            ("💰", "Pharmacoeconomic Analysis", "Cost breakdown, burden score, economic summary"),
-            ("📝", "Clinical Notes", "Physician/pharmacist observations"),
-            ("⚕️", "Clinical Disclaimer", "Legal and professional disclaimers"),
-        ]
-        for icon, title, desc in sections:
-            st.markdown(f"""
-            <div style='background:white; border-radius:8px; padding:0.8rem 1rem; margin:0.3rem 0;
-                        box-shadow:0 1px 4px rgba(0,0,0,0.06); display:flex; gap:1rem; align-items:center;'>
-                <span style='font-size:1.5rem;'>{icon}</span>
-                <div>
-                    <div style='font-weight:600; color:#1e3a5f; font-size:0.9rem;'>{title}</div>
-                    <div style='font-size:0.8rem; color:#718096;'>{desc}</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-
-def _render_report_preview(data: dict):
-    """Render an in-app HTML preview of the report."""
-    risk = data.get("risk_result", {})
-    med = data.get("medication_result", {})
-    econ = data.get("economic_result", {})
-
-    html = f"""
-    <div style='background:white; border-radius:12px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.1);
-                max-width:800px; margin:0 auto; font-family: Georgia, serif;'>
-
-        <!-- Header -->
-        <div style='background:linear-gradient(135deg, #1e3a5f, #2980b9); padding:1.5rem; border-radius:8px;
-                    color:white; margin-bottom:1.5rem; display:flex; justify-content:space-between;'>
-            <div>
-                <div style='font-size:1.4rem; font-weight:700;'>🫀 RenalCare AI</div>
-                <div style='font-size:0.85rem; color:#bde0fe;'>AI-Powered Kidney Disease Intelligence Report</div>
-            </div>
-            <div style='text-align:right; font-size:0.82rem; color:#bde0fe;'>
-                Patient: <b style='color:white;'>{data.get("patient_name","—")}</b><br>
-                Date: {data.get("report_date","—")}<br>
-                Type: {data.get("report_type","Clinical Report")}
-            </div>
+        st.markdown("""
+        <div class="alert alert-success" style="margin-top:0.8rem;">
+            ✅ <strong>Report generated successfully.</strong> Click the button above to download your
+            professional PDF clinical report.
         </div>
+        """, unsafe_allow_html=True)
 
-        <!-- Patient Summary -->
-        <div style='background:#f8fafc; border-radius:8px; padding:1rem; margin-bottom:1rem;
-                    border-left:4px solid #1e3a5f;'>
-            <div style='font-weight:700; color:#1e3a5f; margin-bottom:0.5rem; font-size:0.9rem;'>PATIENT SUMMARY</div>
-            <div style='font-size:0.85rem; color:#4a5568;'>
-                Name: {data.get("patient_name","—")} &nbsp;|&nbsp;
-                Age: {data.get("patient_age","—")} years &nbsp;|&nbsp;
-                Gender: {data.get("patient_gender","—")}
+        _render_preview(risk_data, med_data, econ_data, show_header=False)
+
+    except Exception as e:
+        st.error(f"Report generation error: {e}")
+        st.info("Ensure ReportLab is installed: pip install reportlab")
+
+
+def _render_preview(risk_data, med_data, econ_data, show_header=True):
+    now = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+
+    if show_header:
+        st.markdown("""
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
+            <span style="background:#EFF6FF;color:#1D4ED8;font-size:0.75rem;font-weight:700;
+                         padding:4px 12px;border-radius:20px;">Live Preview</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Preview card
+    preview_html = f"""
+    <div style="background:white;border:1px solid #E2E8F0;border-radius:16px;
+                padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+        <div style="background:linear-gradient(135deg,#1E3A5F,#2563EB);border-radius:10px;
+                    padding:1.5rem;margin-bottom:1.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div style="font-size:1.2rem;font-weight:800;color:white;margin-bottom:3px;">
+                        RenalCare AI — Clinical Intelligence Report
+                    </div>
+                    <div style="font-size:0.78rem;color:rgba(255,255,255,0.7);">
+                        Generated: {now}
+                    </div>
+                </div>
+                <div style="font-size:2rem;">\U0001fac0</div>
             </div>
         </div>
     """
 
-    if risk:
-        cat = risk.get("risk_category", "—")
-        cat_colors = {"Low": "#27ae60", "Moderate": "#e67e22", "High": "#e74c3c", "Critical": "#8e44ad"}
-        cc = cat_colors.get(cat, "#718096")
-        html += f"""
-        <div style='background:#ebf5fb; border-radius:8px; padding:1rem; margin-bottom:1rem;
-                    border-left:4px solid #2980b9;'>
-            <div style='font-weight:700; color:#2980b9; margin-bottom:0.5rem; font-size:0.9rem;'>KIDNEY RISK ANALYSIS</div>
-            <div style='display:flex; gap:2rem;'>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>Risk Score</span><br>
-                    <span style='font-size:1.5rem; font-weight:700; color:#e74c3c;'>{risk.get("risk_score","—")}/100</span>
-                </div>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>Classification</span><br>
-                    <span style='font-size:1.1rem; font-weight:700; color:{cc};'>{cat}</span>
-                </div>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>CKD Stage</span><br>
-                    <span style='font-size:1.1rem; font-weight:700; color:#1e3a5f;'>{risk.get("ckd_stage","—")}</span>
-                </div>
+    if risk_data:
+        r = risk_data
+        preview_html += f"""
+        <div style="margin-bottom:1.2rem;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1E3A5F;border-bottom:2px solid #E2E8F0;
+                        padding-bottom:6px;margin-bottom:0.8rem;">
+                ❤️ Kidney Risk Assessment
             </div>
-            <div style='font-size:0.82rem; color:#4a5568; margin-top:0.5rem;'>{risk.get("clinical_summary","")}</div>
-        </div>
-        """
-
-    if med:
-        flags = med.get("flags", [])
-        html += f"""
-        <div style='background:#f3e8ff; border-radius:8px; padding:1rem; margin-bottom:1rem;
-                    border-left:4px solid #8e44ad;'>
-            <div style='font-weight:700; color:#8e44ad; margin-bottom:0.5rem; font-size:0.9rem;'>MEDICATION INTELLIGENCE REVIEW</div>
-            <div style='font-size:0.85rem;'>Overall Risk: <b>{med.get("overall_risk","—")}</b> · {len(flags)} flag(s) identified</div>
-        </div>
-        """
-
-    if econ:
-        html += f"""
-        <div style='background:#fdf2e9; border-radius:8px; padding:1rem; margin-bottom:1rem;
-                    border-left:4px solid #e67e22;'>
-            <div style='font-weight:700; color:#e67e22; margin-bottom:0.5rem; font-size:0.9rem;'>PHARMACOECONOMIC ANALYSIS</div>
-            <div style='display:flex; gap:2rem;'>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>Annual Cost</span><br>
-                    <span style='font-size:1.3rem; font-weight:700; color:#e74c3c;'>₹{econ.get("total_annual",0):,.0f}</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
+                <div style="background:#FEE2E2;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.3rem;font-weight:800;color:#991B1B;">{getattr(r, 'risk_score', 'N/A'):.0f}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#991B1B;text-transform:uppercase;">Risk Score</div>
                 </div>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>Income Burden</span><br>
-                    <span style='font-size:1.3rem; font-weight:700; color:#e67e22;'>{econ.get("income_burden_pct",0):.1f}%</span>
+                <div style="background:#F1F5F9;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1rem;font-weight:800;color:#1E3A5F;">{getattr(r, 'ckd_stage', 'N/A')}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#64748B;text-transform:uppercase;">CKD Stage</div>
                 </div>
-                <div>
-                    <span style='font-size:0.8rem; color:#718096;'>Financial Risk</span><br>
-                    <span style='font-size:1.1rem; font-weight:700; color:#8e44ad;'>{econ.get("financial_risk_category","—")}</span>
+                <div style="background:#F1F5F9;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1rem;font-weight:800;color:#1E3A5F;">{getattr(r, 'risk_level', 'N/A')}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#64748B;text-transform:uppercase;">Risk Level</div>
                 </div>
             </div>
         </div>
         """
 
-    notes = data.get("clinical_notes", "")
-    if notes:
-        html += f"""
-        <div style='background:#f8f9fa; border-radius:8px; padding:1rem; margin-bottom:1rem;'>
-            <div style='font-weight:700; color:#4a5568; margin-bottom:0.5rem; font-size:0.9rem;'>CLINICAL NOTES</div>
-            <div style='font-size:0.85rem; color:#4a5568;'>{notes}</div>
+    if med_data:
+        high_ct = len([f for f in getattr(med_data, 'flags', []) if getattr(f, 'severity', '') == 'HIGH'])
+        total_ct = len(getattr(med_data, 'flags', []))
+        preview_html += f"""
+        <div style="margin-bottom:1.2rem;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1E3A5F;border-bottom:2px solid #E2E8F0;
+                        padding-bottom:6px;margin-bottom:0.8rem;">
+                \U0001f48a Medication Intelligence
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                <div style="background:#FEE2E2;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.3rem;font-weight:800;color:#991B1B;">{high_ct}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#991B1B;text-transform:uppercase;">Critical Alerts</div>
+                </div>
+                <div style="background:#FEF3C7;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.3rem;font-weight:800;color:#92400E;">{total_ct}</div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#92400E;text-transform:uppercase;">Total Flags</div>
+                </div>
+            </div>
         </div>
         """
 
-    html += """
-        <div style='background:#f0f0f0; border-radius:6px; padding:0.8rem; font-size:0.75rem; color:#718096; font-style:italic;'>
-            ⚕️ This report is generated by RenalCare AI AI Platform for clinical decision support only.
-            It does not constitute medical advice and does not replace the clinical judgment of qualified healthcare professionals.
+    if econ_data:
+        preview_html += f"""
+        <div style="margin-bottom:1.2rem;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1E3A5F;border-bottom:2px solid #E2E8F0;
+                        padding-bottom:6px;margin-bottom:0.8rem;">
+                \U0001f4ca Pharmacoeconomic Analysis
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                <div style="background:#EFF6FF;border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:800;color:#1D4ED8;">
+                        ${getattr(econ_data, 'total_monthly_cost', 0):,.0f}
+                    </div>
+                    <div style="font-size:0.68rem;font-weight:600;color:#1D4ED8;text-transform:uppercase;">Monthly Cost</div>
+                </div>
+                <div style="background:{'#FEE2E2' if getattr(econ_data,'catastrophic_expenditure',False) else '#D1FAE5'};
+                            border-radius:8px;padding:0.6rem;text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:800;
+                                color:{'#991B1B' if getattr(econ_data,'catastrophic_expenditure',False) else '#065F46'};">
+                        {'Catastrophic' if getattr(econ_data,'catastrophic_expenditure',False) else 'Manageable'}
+                    </div>
+                    <div style="font-size:0.68rem;font-weight:600;
+                                color:{'#991B1B' if getattr(econ_data,'catastrophic_expenditure',False) else '#065F46'};
+                                text-transform:uppercase;">WHO Threshold</div>
+                </div>
+            </div>
+        </div>
+        """
+
+    preview_html += """
+        <div style="background:#F8FAFC;border-radius:8px;padding:0.8rem;
+                    font-size:0.75rem;color:#94A3B8;text-align:center;line-height:1.5;">
+            This report is generated by RenalCare AI for educational and decision-support purposes only.
+            All clinical decisions require review by a qualified healthcare professional.
         </div>
     </div>
     """
-    st.markdown(html, unsafe_allow_html=True)
+    st.markdown(preview_html, unsafe_allow_html=True)
+
+
+def _render_empty_state():
+    st.markdown("""
+    <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
+                padding:3rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;">\U0001f4c4</div>
+        <div style="font-size:1rem;font-weight:700;color:#0F172A;margin-bottom:0.5rem;">
+            No Assessment Data Available
+        </div>
+        <div style="font-size:0.84rem;color:#64748B;max-width:380px;margin:0 auto;line-height:1.6;">
+            Complete the Kidney Risk Assessment, Medication Review, or Pharmacoeconomic Analysis
+            to generate a professional clinical report.
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <span style="background:#FEE2E2;color:#991B1B;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">
+                ❤️ Risk Assessment
+            </span>
+            <span style="background:#EEF2FF;color:#3730A3;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">
+                \U0001f48a Medication Review
+            </span>
+            <span style="background:#EFF6FF;color:#1E40AF;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">
+                \U0001f4ca Economic Analysis
+            </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
