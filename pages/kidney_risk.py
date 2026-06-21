@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from models.kidney_risk import RiskInput, calculate_risk
 from components.charts import risk_gauge, risk_factor_bar
 
@@ -34,7 +35,7 @@ IMPACT_SCORE = {"Low": 4, "Moderate": 8, "High": 15, "Critical": 25}
 
 
 def render():
-    st.markdown("""
+    sh("""
     <div class="page-header">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
@@ -57,13 +58,13 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     left_col, right_col = st.columns([1.1, 1.5])
 
     with left_col:
         with st.form("risk_form"):
-            st.markdown('<div class="section-title-accent"><span>\U0001f464</span> Demographics</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent"><span>\U0001f464</span> Demographics</div>')
             c1, c2 = st.columns(2)
             with c1:
                 age = st.number_input("Age (years)", 18, 100, 58)
@@ -76,7 +77,7 @@ def render():
             with c4:
                 height = st.number_input("Height (cm)", 130, 220, 168)
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f9ea</span> Laboratory Values</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f9ea</span> Laboratory Values</div>')
             c5, c6 = st.columns(2)
             with c5:
                 egfr = st.number_input("eGFR (mL/min/1.73m²)", 1, 150, 38)
@@ -95,7 +96,7 @@ def render():
             with c_bp2:
                 dbp = st.number_input("Diastolic BP (mmHg)", 50, 140, 92)
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f3e5</span> Comorbidities</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f3e5</span> Comorbidities</div>')
             ca, cb = st.columns(2)
             with ca:
                 diabetes     = st.checkbox("Diabetes Mellitus", value=True)
@@ -136,11 +137,11 @@ def render():
             st.session_state.risk_result = result
             _render_results(result, egfr, bmi)
         elif st.session_state.get("risk_result"):
-            st.markdown("""
+            sh("""
             <div class="alert alert-info" style="margin-bottom:0.8rem;">
                 Showing previous assessment — adjust inputs and re-run to update.
             </div>
-            """, unsafe_allow_html=True)
+            """)
             _render_placeholder()
         else:
             _render_placeholder()
@@ -152,7 +153,7 @@ def _render_results(result, egfr, bmi):
 
     # ── Risk banner ────────────────────────────────────────────────────────
     stage_num = result.ckd_stage_num
-    st.markdown(f"""
+    sh(f"""
     <div style="background:{bg};border:2px solid {color};border-radius:14px;
                 padding:1.2rem 1.5rem;margin-bottom:1.2rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -174,7 +175,7 @@ def _render_results(result, egfr, bmi):
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Gauge chart ────────────────────────────────────────────────────────
     try:
@@ -186,7 +187,7 @@ def _render_results(result, egfr, bmi):
     # ── CKD Stage badge ────────────────────────────────────────────────────
     if stage_num in CKD_STAGE_DESC:
         s_label, s_range, s_color = CKD_STAGE_DESC[stage_num]
-        st.markdown(f"""
+        sh(f"""
         <div style="background:white;border:1px solid #E2E8F0;border-radius:10px;
                     padding:0.9rem 1.1rem;margin-bottom:0.8rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -203,7 +204,7 @@ def _render_results(result, egfr, bmi):
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # ── Contributing factors chart ─────────────────────────────────────────
     if result.contributing_factors:
@@ -220,11 +221,11 @@ def _render_results(result, egfr, bmi):
 
     # ── Recommendations ────────────────────────────────────────────────────
     if result.recommendations:
-        st.markdown('<div class="section-title"><span>\U0001f4cb</span> Clinical Recommendations</div>', unsafe_allow_html=True)
+        sh('<div class="section-title"><span>\U0001f4cb</span> Clinical Recommendations</div>')
         for i, rec in enumerate(result.recommendations, 1):
             p_color = "#EF4444" if i <= 2 else ("#F59E0B" if i <= 4 else "#64748B")
             p_label = "HIGH" if i <= 2 else ("MODERATE" if i <= 4 else "ROUTINE")
-            st.markdown(f"""
+            sh(f"""
             <div style="background:white;border:1px solid #E2E8F0;border-radius:8px;
                         padding:0.75rem 1rem;margin-bottom:0.4rem;
                         border-left:3px solid {p_color};display:flex;gap:10px;align-items:flex-start;">
@@ -233,11 +234,11 @@ def _render_results(result, egfr, bmi):
                             flex-shrink:0;margin-top:1px;">{p_label}</div>
                 <div style="font-size:0.84rem;color:#334155;line-height:1.5;">{rec}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
 
 def _render_placeholder():
-    st.markdown("""
+    sh("""
     <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
                 padding:3rem;text-align:center;margin-top:0.5rem;">
         <div style="font-size:3rem;margin-bottom:1rem;">❤️</div>
@@ -257,4 +258,4 @@ def _render_placeholder():
                          padding:5px 12px;border-radius:8px;">Risk Score 0-100</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)

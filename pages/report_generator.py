@@ -4,11 +4,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from datetime import datetime
 
 
 def render():
-    st.markdown("""
+    sh("""
     <div class="page-header">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
@@ -26,7 +27,7 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Data availability check ────────────────────────────────────────────
     risk_data = st.session_state.get("risk_result")
@@ -39,10 +40,10 @@ def render():
 
     with left_col:
         # ── Data status panel ──────────────────────────────────────────────
-        st.markdown("""
+        sh("""
         <div class="rc-card">
             <div class="section-title"><span>\U0001f4cb</span> Available Assessment Data</div>
-        """, unsafe_allow_html=True)
+        """)
 
         modules_status = [
             ("Kidney Risk Assessment", risk_data, "Risk",       "\U0001f9e0"),
@@ -55,7 +56,7 @@ def render():
             color = "#10B981" if has else "#CBD5E1"
             bg    = "#D1FAE5" if has else "#F8FAFC"
             label = "Data Available" if has else "Not Completed"
-            st.markdown(f"""
+            sh(f"""
             <div style="background:{bg};border:1px solid {color}30;border-radius:8px;
                         padding:0.7rem 0.9rem;margin-bottom:0.5rem;
                         display:flex;align-items:center;justify-content:space-between;">
@@ -69,24 +70,24 @@ def render():
                     {'&#x2713; ' if has else ''}{label}
                 </span>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         if not has_any:
-            st.markdown("""
+            sh("""
             <div class="alert alert-warning" style="margin-top:0.8rem;">
                 ⚠️ Complete at least one module assessment to generate a report.
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+        sh('</div>')
 
         # ── Report config ──────────────────────────────────────────────────
-        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-        st.markdown("""
+        sh("<div style='margin-top:0.8rem;'></div>")
+        sh("""
         <div class="rc-card">
             <div class="section-title"><span>\U00002699</span> Report Configuration</div>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        """)
+        sh('</div>')
 
         patient_name = st.text_input("Patient Name / ID", placeholder="e.g. Patient A or MRN-001")
         provider     = st.text_input("Ordering Clinician", value="Dr. Reema Hussain, PharmD")
@@ -140,12 +141,12 @@ def _generate_report(patient_name, provider, institution, risk_data, med_data, e
             use_container_width=True,
         )
 
-        st.markdown("""
+        sh("""
         <div class="alert alert-success" style="margin-top:0.8rem;">
             ✅ <strong>Report generated successfully.</strong> Click the button above to download your
             professional PDF clinical report.
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         _render_preview(risk_data, med_data, econ_data, show_header=False)
 
@@ -158,12 +159,12 @@ def _render_preview(risk_data, med_data, econ_data, show_header=True):
     now = datetime.now().strftime("%B %d, %Y at %I:%M %p")
 
     if show_header:
-        st.markdown("""
+        sh("""
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
             <span style="background:#EFF6FF;color:#1D4ED8;font-size:0.75rem;font-weight:700;
                          padding:4px 12px;border-radius:20px;">Live Preview</span>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # Preview card
     preview_html = f"""
@@ -268,11 +269,11 @@ def _render_preview(risk_data, med_data, econ_data, show_header=True):
         </div>
     </div>
     """
-    st.markdown(preview_html, unsafe_allow_html=True)
+    sh(preview_html)
 
 
 def _render_empty_state():
-    st.markdown("""
+    sh("""
     <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
                 padding:3rem;text-align:center;">
         <div style="font-size:3rem;margin-bottom:1rem;">\U0001f4c4</div>
@@ -295,4 +296,4 @@ def _render_empty_state():
             </span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)

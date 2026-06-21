@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-from components.styles import inject_css
+from components.styles import inject_css, sh
 inject_css()
 
 # ── Session defaults ───────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ def go(page: str):
 # ── Sidebar ────────────────────────────────────────────────────────────────
 with st.sidebar:
     # Logo block
-    st.markdown("""
+    sh("""
     <div style="padding:1.6rem 1.2rem 0.8rem 1.2rem;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
             <div style="width:38px;height:38px;background:linear-gradient(135deg,#14B8A6,#6366F1);
@@ -44,10 +44,10 @@ with st.sidebar:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Version + role badges
-    st.markdown("""
+    sh("""
     <div style="padding:0 1.2rem 1rem 1.2rem;display:flex;gap:6px;flex-wrap:wrap;">
         <span style="background:rgba(20,184,166,0.15);color:#14B8A6;font-size:0.65rem;
                      font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.05em;">
@@ -58,10 +58,10 @@ with st.sidebar:
             PharmD Edition
         </span>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
-    st.markdown('<hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin:0 1.2rem 0.8rem 1.2rem;">', unsafe_allow_html=True)
-    st.markdown('<div style="padding:0 1.2rem 0.3rem;font-size:0.65rem;font-weight:700;color:#475569;letter-spacing:0.1em;text-transform:uppercase;">Navigation</div>', unsafe_allow_html=True)
+    sh('<hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin:0 1.2rem 0.8rem 1.2rem;">')
+    sh('<div style="padding:0 1.2rem 0.3rem;font-size:0.65rem;font-weight:700;color:#475569;letter-spacing:0.1em;text-transform:uppercase;">Navigation</div>')
 
     nav_items = [
         ("Home",       "\U0001f3e0",  "Home"),
@@ -78,7 +78,7 @@ with st.sidebar:
             go(key)
 
     # Future modules lock block
-    st.markdown("""
+    sh("""
     <div style="margin:1.2rem 0.8rem 0;border-radius:10px;
                 background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
                 padding:0.9rem 1rem;">
@@ -93,10 +93,10 @@ with st.sidebar:
         <div style="margin-top:0.6rem;padding-top:0.5rem;border-top:1px solid rgba(255,255,255,0.05);
                     font-size:0.69rem;color:#475569;">V2 Roadmap &bull; 2025</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Bottom user card
-    st.markdown("""
+    sh("""
     <div style="margin-top:2rem;padding:0.9rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);
                 background:rgba(0,0,0,0.12);">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -109,7 +109,7 @@ with st.sidebar:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 # ── Router ─────────────────────────────────────────────────────────────────
 page = st.session_state.current_page

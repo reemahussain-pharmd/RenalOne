@@ -1,6 +1,7 @@
 """Dashboard Home Page — RenalCare AI."""
 
 import streamlit as st
+from components.styles import sh
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -13,7 +14,7 @@ def go(page: str):
 
 def render():
     # ── Hero Banner ────────────────────────────────────────────────────────
-    st.markdown("""
+    sh("""
     <div style="background:linear-gradient(135deg,#0F1F3D 0%,#1E3A5F 45%,#0F4C5C 100%);
                 border-radius:20px;padding:2.5rem 3rem;margin-bottom:1.5rem;
                 position:relative;overflow:hidden;">
@@ -63,7 +64,7 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── KPI Stats Row ──────────────────────────────────────────────────────
     k1, k2, k3, k4 = st.columns(4)
@@ -75,7 +76,7 @@ def render():
     ]
     for col, (color, icon, value, label) in zip([k1, k2, k3, k4], kpis):
         with col:
-            st.markdown(f"""
+            sh(f"""
             <div class="kpi-card">
                 <div class="kpi-icon" style="background:{color}18;">
                     <span style="font-size:1.3rem;">{icon}</span>
@@ -83,12 +84,12 @@ def render():
                 <div class="kpi-value" style="color:{color};">{value}</div>
                 <div class="kpi-label">{label}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
-    st.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
+    sh("<div style='margin-top:1.5rem;'></div>")
 
     # ── Section header ─────────────────────────────────────────────────────
-    st.markdown("""
+    sh("""
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
         <div>
             <div style="font-size:1.1rem;font-weight:800;color:#0F172A;">Clinical Intelligence Modules</div>
@@ -99,7 +100,7 @@ def render():
         <div style="background:#F1F5F9;border-radius:20px;padding:4px 12px;font-size:0.75rem;
                     font-weight:600;color:#64748B;">V1 — All Active</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Module Cards ───────────────────────────────────────────────────────
     modules = [
@@ -128,7 +129,7 @@ def render():
                 key=f"mod_{key}",
                 use_container_width=False,
             )
-            st.markdown(f"""
+            sh(f"""
             <div class="module-card" style="border-top:3px solid {color};">
                 <div class="module-icon" style="background:{bg};">
                     <span style="font-size:1.5rem;">{icon}</span>
@@ -143,17 +144,17 @@ def render():
                     <span>AI-Powered</span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
             if clicked:
                 go(key)
 
-    st.markdown("<div style='margin-top:1.8rem;'></div>", unsafe_allow_html=True)
+    sh("<div style='margin-top:1.8rem;'></div>")
 
     # ── Two-column info row ────────────────────────────────────────────────
     left, right = st.columns([1.2, 1])
 
     with left:
-        st.markdown("""
+        sh("""
         <div class="rc-card">
             <div class="section-title">
                 <span>\U0001f4da</span> Clinical Evidence Foundation
@@ -193,16 +194,16 @@ def render():
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     with right:
-        st.markdown("""
+        sh("""
         <div class="rc-card">
             <div class="section-title">
                 <span>\U0001f6e0</span> Technology Stack
             </div>
             <div style="display:flex;flex-direction:column;gap:0.5rem;">
-        """, unsafe_allow_html=True)
+        """)
 
         tech = [
             ("#EFF6FF", "#3B82F6", "GPT-4o-mini / Gemini", "AI Intelligence Engine"),
@@ -220,10 +221,10 @@ def render():
                 <span style="font-size:0.72rem;color:{color};font-weight:500;">{role}</span>
             </div>
             """
-        st.markdown(badges_html + "</div></div>", unsafe_allow_html=True)
+        sh(badges_html + "</div></div>")
 
     # ── Disclaimer ─────────────────────────────────────────────────────────
-    st.markdown("""
+    sh("""
     <div style="margin-top:1.5rem;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;
                 padding:0.9rem 1.2rem;display:flex;gap:0.8rem;align-items:flex-start;">
         <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
@@ -233,4 +234,4 @@ def render():
             professionals. This platform does not constitute medical advice or replace clinical judgment.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)

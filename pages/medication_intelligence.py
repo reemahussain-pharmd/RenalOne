@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from medication.checker import MedicationInput, run_medication_review
 from utils.constants import COMMON_DIAGNOSES, COMMON_MEDICATIONS
 
@@ -18,7 +19,7 @@ SEVERITY_CONFIG = {
 
 def render():
     # ── Page Header ────────────────────────────────────────────────────────
-    st.markdown("""
+    sh("""
     <div class="page-header">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
@@ -44,13 +45,13 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     left_col, right_col = st.columns([1.1, 1.5])
 
     with left_col:
         with st.form("med_form"):
-            st.markdown('<div class="section-title-accent"><span>\U0001f9fe</span> Patient Profile</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent"><span>\U0001f9fe</span> Patient Profile</div>')
 
             egfr = st.number_input(
                 "eGFR (mL/min/1.73m²)",
@@ -59,7 +60,7 @@ def render():
             )
             creatinine = st.number_input("Serum Creatinine (mg/dL)", 0.4, 15.0, 1.8, 0.1)
 
-            st.markdown('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Active Diagnoses</div>', unsafe_allow_html=True)
+            sh('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Active Diagnoses</div>')
             diagnoses = st.multiselect(
                 "Diagnoses",
                 options=COMMON_DIAGNOSES,
@@ -67,7 +68,7 @@ def render():
                 label_visibility="collapsed",
             )
 
-            st.markdown('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Current Medications</div>', unsafe_allow_html=True)
+            sh('<div style="font-size:0.83rem;font-weight:600;color:#374151;margin:0.8rem 0 0.3rem;">Current Medications</div>')
             medications = st.multiselect(
                 "Medications",
                 options=COMMON_MEDICATIONS,
@@ -75,7 +76,7 @@ def render():
                 label_visibility="collapsed",
             )
 
-            st.markdown("**Laboratory Values**")
+            sh("**Laboratory Values**")
             c1, c2 = st.columns(2)
             with c1:
                 potassium = st.number_input("Potassium (mEq/L)", 2.5, 7.0, 4.2, 0.1)
@@ -114,7 +115,7 @@ def render():
             <div class="alert alert-warning">
                 ⚠️ Please select at least one medication to review.
             </div>
-            """, unsafe_allow_html=True)
+            """)
         else:
             _render_placeholder()
 
@@ -132,7 +133,7 @@ def _render_results(result, med_count=0):
     risk_label = "HIGH RISK" if critical_count > 0 else ("MODERATE RISK" if mod_flags else "LOW RISK")
     risk_bg    = "#FEE2E2" if critical_count > 0 else ("#FEF3C7" if mod_flags else "#D1FAE5")
 
-    st.markdown(f"""
+    sh(f"""
     <div style="background:{risk_bg};border:2px solid {risk_color};border-radius:14px;
                 padding:1.2rem 1.5rem;margin-bottom:1.2rem;
                 display:flex;align-items:center;justify-content:space-between;">
@@ -152,10 +153,10 @@ def _render_results(result, med_count=0):
                         letter-spacing:0.06em;text-transform:uppercase;">Critical Alerts</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Severity pills ─────────────────────────────────────────────────────
-    st.markdown(f"""
+    sh(f"""
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;">
         <span style="background:#FEE2E2;color:#991B1B;padding:4px 12px;border-radius:20px;
                      font-size:0.77rem;font-weight:700;">
@@ -170,15 +171,15 @@ def _render_results(result, med_count=0):
             \U0001f535 {len(low_flags)} Informational
         </span>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Drug flag cards ────────────────────────────────────────────────────
     if flags:
-        st.markdown('<div class="section-title"><span>\U0001f6a8</span> Drug Alerts</div>', unsafe_allow_html=True)
+        sh('<div class="section-title"><span>\U0001f6a8</span> Drug Alerts</div>')
         for flag in flags:
             sev = flag.severity.upper()
             color, bg, text_color, dot = SEVERITY_CONFIG.get(sev, SEVERITY_CONFIG["INFO"])
-            st.markdown(f"""
+            sh(f"""
             <div class="flag-card" style="border-left:4px solid {color};background:{bg}18;">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
                     <div style="flex:1;">
@@ -206,30 +207,30 @@ def _render_results(result, med_count=0):
                     </div>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
     else:
-        st.markdown("""
+        sh("""
         <div class="alert alert-success">
             ✅ <strong>No drug alerts identified.</strong> All selected medications appear
             appropriate for the entered eGFR and clinical context.
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # ── Monitoring requirements ────────────────────────────────────────────
     monitoring = getattr(result, "monitoring_requirements", [])
     if monitoring:
-        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="section-title"><span>\U0001f9ea</span> Monitoring Requirements</div>', unsafe_allow_html=True)
+        sh("<div style='margin-top:0.8rem;'></div>")
+        sh('<div class="section-title"><span>\U0001f9ea</span> Monitoring Requirements</div>')
         mon_html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
         for m in monitoring:
             mon_html += f'<span style="background:#EEF2FF;color:#3730A3;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">\U0001f4dd {m}</span>'
         mon_html += '</div>'
-        st.markdown(mon_html, unsafe_allow_html=True)
+        sh(mon_html)
 
     # ── AI narrative ───────────────────────────────────────────────────────
     if result.ai_narrative:
-        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-        st.markdown(f"""
+        sh("<div style='margin-top:0.8rem;'></div>")
+        sh(f"""
         <div style="background:linear-gradient(135deg,#EEF2FF,#F0FDF4);border-radius:12px;
                     padding:1.2rem;border:1px solid #C7D2FE;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;">
@@ -242,11 +243,11 @@ def _render_results(result, med_count=0):
                 {result.ai_narrative.replace(chr(10), '<br>')}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 def _render_placeholder():
-    st.markdown("""
+    sh("""
     <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
                 padding:3rem;text-align:center;">
         <div style="font-size:3rem;margin-bottom:1rem;">\U0001f48a</div>
@@ -267,4 +268,4 @@ def _render_placeholder():
                          padding:5px 12px;border-radius:8px;">Drug Interactions</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)

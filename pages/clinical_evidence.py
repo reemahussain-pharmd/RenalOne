@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from rag.engine import get_rag_engine
 
 
@@ -18,7 +19,7 @@ EXAMPLE_QUERIES = [
 
 
 def render():
-    st.markdown("""
+    sh("""
     <div class="page-header">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
@@ -41,17 +42,17 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     left_col, right_col = st.columns([1.5, 1])
 
     with left_col:
         # ── Query Input ────────────────────────────────────────────────────
-        st.markdown("""
+        sh("""
         <div class="rc-card" style="margin-bottom:1rem;">
             <div class="section-title"><span>\U0001f4ac</span> Clinical Query</div>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        """)
+        sh('</div>')
 
         query = st.text_area(
             "Ask a clinical question:",
@@ -80,7 +81,7 @@ def render():
             _render_answer(result)
 
         elif not search_clicked:
-            st.markdown("""
+            sh("""
             <div style="background:#F8FAFC;border:2px dashed #E2E8F0;border-radius:12px;
                         padding:2.5rem;text-align:center;margin-top:0.5rem;">
                 <div style="font-size:2.5rem;margin-bottom:0.8rem;">\U0001f50d</div>
@@ -92,11 +93,11 @@ def render():
                     or treatment recommendations.
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
     with right_col:
         # ── Knowledge base cards ───────────────────────────────────────────
-        st.markdown("""
+        sh("""
         <div class="rc-card">
             <div class="section-title"><span>\U0001f4da</span> Knowledge Base</div>
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
@@ -105,7 +106,7 @@ def render():
                 <span style="background:#EFF6FF;color:#1D4ED8;font-size:0.72rem;font-weight:700;
                              padding:3px 10px;border-radius:20px;">Always Available</span>
             </div>
-        """, unsafe_allow_html=True)
+        """)
 
         topics = [
             "\U0001f3e5 CKD Definition & Classification",
@@ -123,17 +124,17 @@ def render():
             "\U0001f4b0 Pharmacoeconomic Burden",
         ]
         for t in topics:
-            st.markdown(f'<div style="font-size:0.81rem;color:#374151;padding:4px 0;border-bottom:1px solid #F1F5F9;">{t}</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+            sh(f'<div style="font-size:0.81rem;color:#374151;padding:4px 0;border-bottom:1px solid #F1F5F9;">{t}</div>')
+        sh('</div>')
 
-        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+        sh("<div style='margin-top:0.8rem;'></div>")
 
         # ── Example questions ──────────────────────────────────────────────
-        st.markdown("""
+        sh("""
         <div class="rc-card">
             <div class="section-title"><span>\U0001f4a1</span> Example Queries</div>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        """)
+        sh('</div>')
 
         for i, q in enumerate(EXAMPLE_QUERIES):
             if st.button(q, key=f"ex_{i}", use_container_width=True):
@@ -154,7 +155,7 @@ def _render_answer(result):
         sources  = []
         n_sources = 0
 
-    st.markdown(f"""
+    sh(f"""
     <div style="margin-top:0.8rem;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;">
             <span style="background:#D1FAE5;color:#065F46;font-size:0.72rem;font-weight:700;
@@ -175,14 +176,14 @@ def _render_answer(result):
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     if sources:
-        st.markdown('<div class="section-title"><span>\U0001f4da</span> Source Articles</div>', unsafe_allow_html=True)
+        sh('<div class="section-title"><span>\U0001f4da</span> Source Articles</div>')
         for src in sources[:4]:
             title   = src.get("title", "KDIGO Clinical Article") if isinstance(src, dict) else str(src)
             snippet = src.get("snippet", "")          if isinstance(src, dict) else ""
-            st.markdown(f"""
+            sh(f"""
             <div style="background:white;border:1px solid #E2E8F0;border-radius:8px;
                         padding:0.8rem 1rem;margin-bottom:0.4rem;border-left:3px solid #3B82F6;">
                 <div style="font-size:0.83rem;font-weight:700;color:#0F172A;margin-bottom:0.3rem;">
@@ -190,4 +191,4 @@ def _render_answer(result):
                 </div>
                 {f'<div style="font-size:0.79rem;color:#64748B;line-height:1.5;">{snippet[:200]}...</div>' if snippet else ''}
             </div>
-            """, unsafe_allow_html=True)
+            """)

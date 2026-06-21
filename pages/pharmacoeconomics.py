@@ -4,12 +4,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from economics.calculator import EconomicInput, calculate_economic_burden
 from components.charts import cost_donut
 
 
 def render():
-    st.markdown("""
+    sh("""
     <div class="page-header">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div>
@@ -32,13 +33,13 @@ def render():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     left_col, right_col = st.columns([1.1, 1.5])
 
     with left_col:
         with st.form("econ_form"):
-            st.markdown('<div class="section-title-accent"><span>\U0001f3e5</span> Dialysis Costs</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent"><span>\U0001f3e5</span> Dialysis Costs</div>')
             c1, c2 = st.columns(2)
             with c1:
                 sessions_per_week = st.number_input("Sessions/week", 1, 7, 3)
@@ -47,21 +48,21 @@ def render():
                 dialysis_type = st.selectbox("Dialysis Type",
                     ["Hemodialysis", "Peritoneal Dialysis", "Pre-Dialysis CKD"])
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f48a</span> Medication Costs</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f48a</span> Medication Costs</div>')
             c3, c4 = st.columns(2)
             with c3:
                 monthly_meds = st.number_input("Medications/month ($)", 0, 2000, 320)
             with c4:
                 epo_cost = st.number_input("EPO agents/month ($)", 0, 2000, 0)
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f9ea</span> Laboratory & Monitoring</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f9ea</span> Laboratory & Monitoring</div>')
             c5, c6 = st.columns(2)
             with c5:
                 monthly_labs = st.number_input("Lab tests/month ($)", 0, 500, 120)
             with c6:
                 consults = st.number_input("Specialist visits/month ($)", 0, 500, 80)
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f697</span> Indirect Costs</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f697</span> Indirect Costs</div>')
             c7, c8 = st.columns(2)
             with c7:
                 transport_per_session = st.number_input("Transport/session ($)", 0, 200, 18)
@@ -70,7 +71,7 @@ def render():
                 lost_wages = st.number_input("Lost wages/month ($)", 0, 5000, 600)
                 hospitalization = st.number_input("Hospitalization/year ($)", 0, 20000, 0)
 
-            st.markdown('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f4b0</span> Household Income</div>', unsafe_allow_html=True)
+            sh('<div class="section-title-accent" style="margin-top:0.8rem;"><span>\U0001f4b0</span> Household Income</div>')
             monthly_income = st.number_input("Household income/month ($)", 100, 20000, 1800)
 
             submitted = st.form_submit_button(
@@ -123,17 +124,17 @@ def _render_results(result):
     ]
     for col, (label, val, color) in zip([k1, k2, k3, k4], metrics):
         with col:
-            st.markdown(f"""
+            sh(f"""
             <div class="kpi-card">
                 <div class="kpi-value" style="color:{color};font-size:1.5rem;">{val}</div>
                 <div class="kpi-label">{label}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
-    st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+    sh("<div style='margin-top:0.8rem;'></div>")
 
     # ── Catastrophic expenditure banner ────────────────────────────────────
-    st.markdown(f"""
+    sh(f"""
     <div style="background:{cat_bg};border:2px solid {cat_color};border-radius:12px;
                 padding:1rem 1.4rem;margin-bottom:1rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -152,7 +153,7 @@ def _render_results(result):
             <div style="font-size:2.5rem;font-weight:900;color:{cat_color};">{pct:.0f}%</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # ── Chart + breakdown table ────────────────────────────────────────────
     chart_col, table_col = st.columns([1, 1.1])
@@ -170,7 +171,7 @@ def _render_results(result):
             pass
 
     with table_col:
-        st.markdown('<div class="section-title"><span>\U0001f4cb</span> Cost Breakdown</div>', unsafe_allow_html=True)
+        sh('<div class="section-title"><span>\U0001f4cb</span> Cost Breakdown</div>')
 
         # Build rows from cost_drivers if available, else fallback to top-level fields
         drivers = getattr(result, "cost_drivers", []) or []
@@ -205,12 +206,12 @@ def _render_results(result):
             <td style="font-weight:700;color:#1E3A5F;">100%</td>
         </tr></tbody></table>
         """
-        st.markdown(table_html, unsafe_allow_html=True)
+        sh(table_html)
 
     # ── AI narrative ───────────────────────────────────────────────────────
     if getattr(result, "ai_narrative", ""):
-        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-        st.markdown(f"""
+        sh("<div style='margin-top:0.8rem;'></div>")
+        sh(f"""
         <div style="background:linear-gradient(135deg,#EEF2FF,#F0FDF4);border-radius:12px;
                     padding:1.2rem;border:1px solid #C7D2FE;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.7rem;">
@@ -223,11 +224,11 @@ def _render_results(result):
                 {result.ai_narrative.replace(chr(10), '<br>')}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # ── Policy insights ────────────────────────────────────────────────────
-    st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
-    st.markdown("""
+    sh("<div style='margin-top:1rem;'></div>")
+    sh("""
     <div class="rc-card">
         <div class="section-title"><span>\U0001f4a1</span> Policy & Clinical Implications</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
@@ -257,11 +258,11 @@ def _render_results(result):
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_placeholder():
-    st.markdown("""
+    sh("""
     <div style="background:white;border:2px dashed #E2E8F0;border-radius:16px;
                 padding:3rem;text-align:center;">
         <div style="font-size:3rem;margin-bottom:1rem;">\U0001f4ca</div>
@@ -278,4 +279,4 @@ def _render_placeholder():
             <span style="background:#FEF3C7;color:#92400E;font-size:0.78rem;font-weight:600;padding:5px 12px;border-radius:8px;">WHO Threshold</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)

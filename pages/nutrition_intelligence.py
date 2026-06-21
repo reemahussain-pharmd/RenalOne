@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
+from components.styles import sh
 from nutrition.analyzer import analyse_food, analyse_ai_food, NutritionProfile
 from nutrition.food_database import FOOD_DB as FOOD_DATABASE
 from components.charts import nutrient_radar
@@ -27,7 +28,7 @@ LIMIT_CARDS = [
 
 
 def render():
-    st.markdown("""
+    sh("""
 <div class="page-header">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;">
 <div>
@@ -40,7 +41,7 @@ def render():
 </div>
 </div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
     pc1, pc2, pc3, pc4 = st.columns(4)
     with pc1:
@@ -58,7 +59,7 @@ def render():
     dialysis_tag = " (Dialysis)" if on_dialysis else ""
 
     # ── Daily limits — using st.columns so no HTML grid needed ────────────
-    st.markdown(
+    sh(
         f'<div style="font-size:0.85rem;font-weight:700;color:#0F172A;margin:0.8rem 0 0.5rem;">'
         f'\U0001f4ca Daily Limits — CKD Stage {ckd_stage}{dialysis_tag}</div>',
         unsafe_allow_html=True,
@@ -75,7 +76,7 @@ def render():
                 unsafe_allow_html=True,
             )
 
-    st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:0.8rem;'></div>")
 
     profile = NutritionProfile(
         ckd_stage=stage_int,
@@ -119,7 +120,7 @@ def _tab_search(profile, limits):
             }
             s_color, s_bg, s_text, s_icon, s_label = suit_cfg.get(suit, suit_cfg["Caution"])
 
-            st.markdown(
+            sh(
                 f'<div style="background:{s_bg};border:2px solid {s_color};border-radius:14px;padding:1.2rem 1.5rem;margin:0.8rem 0;">'
                 f'<div style="display:flex;align-items:center;gap:10px;">'
                 f'<span style="font-size:1.5rem;">{s_icon}</span>'
@@ -155,13 +156,13 @@ def _tab_search(profile, limits):
                 )
 
             if result.reasons:
-                st.markdown('<div style="font-size:0.88rem;font-weight:700;color:#0F172A;margin:0.8rem 0 0.4rem;">\U0001f4dd Clinical Notes</div>', unsafe_allow_html=True)
+                st.markdown('<div style="font-size:0.88rem;font-weight:700;color:#0F172A;margin:0.8rem 0 0.4rem;">\U0001f4dd Clinical Notes</div>')
                 for r in result.reasons:
-                    st.markdown(f'<div style="font-size:0.83rem;color:#374151;margin-bottom:4px;">&#x2022; {r}</div>', unsafe_allow_html=True)
+                    sh(f'<div style="font-size:0.83rem;color:#374151;margin-bottom:4px;">&#x2022; {r}</div>')
 
             if result.tips:
                 tips_inner = "".join(f'<div style="font-size:0.82rem;color:#166534;margin-bottom:3px;">&#x2713; {t}</div>' for t in result.tips)
-                st.markdown(
+                sh(
                     f'<div style="background:#F0FDF4;border-radius:10px;padding:0.9rem 1.1rem;margin-top:0.7rem;">'
                     f'<div style="font-size:0.82rem;font-weight:700;color:#065F46;margin-bottom:0.4rem;">\U0001f4a1 Dietary Tips</div>'
                     f'{tips_inner}</div>',
@@ -233,7 +234,7 @@ def _tab_ai(profile, ckd_stage):
                     unsafe_allow_html=True,
                 )
                 for r in result.reasons:
-                    st.markdown(f'<div style="font-size:0.83rem;color:#374151;margin:3px 0;">&#x2022; {r}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="font-size:0.83rem;color:#374151;margin:3px 0;">&#x2022; {r}</div>')
             else:
                 st.warning("AI analysis unavailable. Please configure an API key in Streamlit secrets.")
 

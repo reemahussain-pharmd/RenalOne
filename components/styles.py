@@ -520,3 +520,18 @@ div[data-testid="stSidebarNav"] { display: none !important; }
 def inject_css():
     import streamlit as st
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+
+
+import re as _re
+
+def sh(html: str) -> None:
+    """Safe HTML render — strips blank lines that terminate CommonMark HTML blocks.
+
+    Streamlit's st.markdown() runs content through a CommonMark parser even with
+    unsafe_allow_html=True. A blank line (or whitespace-only line) inside an HTML
+    block terminates it, causing the rest to render as plain text. This helper
+    collapses consecutive blank/whitespace-only lines before rendering.
+    """
+    import streamlit as st
+    cleaned = _re.sub(r'[ \t]*\n([ \t]*\n)+', '\n', html)
+    st.markdown(cleaned, unsafe_allow_html=True)
