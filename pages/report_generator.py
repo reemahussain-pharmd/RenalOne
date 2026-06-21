@@ -126,9 +126,10 @@ def _generate_report(patient_name, provider, institution, risk_data, med_data, e
             "provider": provider,
             "institution": institution,
             "date": datetime.now().strftime("%B %d, %Y"),
-            "risk_result": risk_data,
-            "med_result":  med_data,
-            "econ_result": econ_data,
+            "risk_result":       risk_data,
+            "med_result":        med_data,
+            "econ_result":       econ_data,
+            "nutrition_result":  st.session_state.get("nutrition_result"),
         }
         pdf_bytes = generate_report(report_data)
 

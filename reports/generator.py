@@ -291,6 +291,52 @@ def generate_report(report_data: dict) -> bytes:
             story.append(Paragraph(str(ai_narrative).replace("**", "").replace("*", ""), s["body"]))
         story.append(Spacer(1, 0.3*cm))
 
+    # ---- NUTRITION ANALYSIS ----
+    # page stores as st.session_state.nutrition_result (dict with log + totals)
+    nutrition = report_data.get("nutrition_result")
+    if nutrition and isinstance(nutrition, dict):
+        totals = nutrition.get("totals", {})
+        log    = nutrition.get("log", [])
+        ckd_st = nutrition.get("ckd_stage", "—")
+        if totals or log:
+            story.append(_build_section_bar("KIDNEY NUTRITION ANALYSIS", GREEN))
+            nutr_rows = [
+                ("CKD Stage", ckd_st),
+                ("Foods Analysed", str(len(log))),
+                ("Total Potassium (K⁺)", f"{totals.get('potassium_mg', 0):.0f} mg"),
+                ("Total Sodium (Na⁺)", f"{totals.get('sodium_mg', 0):.0f} mg"),
+                ("Total Phosphorus (PO₄)", f"{totals.get('phosphorus_mg', 0):.0f} mg"),
+                ("Total Protein", f"{totals.get('protein_g', 0):.1f} g"),
+                ("Total Calories", f"{totals.get('calories', 0):.0f} kcal"),
+            ]
+            story.append(_kv_table(nutr_rows))
+            if log:
+                story.append(Spacer(1, 0.15*cm))
+                story.append(Paragraph("<b>Food Log</b>", s["subsection"]))
+                food_data = [["Food Item", "Amount (g)", "K⁺ (mg)", "Na (mg)", "PO₄ (mg)", "Protein (g)", "Status"]] + [
+                    [item.get("food", ""), str(item.get("amount", "")),
+                     f"{item.get('nutrients',{}).get('potassium_mg',0):.0f}",
+                     f"{item.get('nutrients',{}).get('sodium_mg',0):.0f}",
+                     f"{item.get('nutrients',{}).get('phosphorus_mg',0):.0f}",
+                     f"{item.get('nutrients',{}).get('protein_g',0):.1f}",
+                     item.get("suitability", "")]
+                    for item in log
+                ]
+                ft = Table(food_data, colWidths=[4*cm, 2*cm, 2*cm, 2*cm, 2*cm, 2*cm, 2.5*cm])
+                ft.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, 0), GREEN),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), WHITE),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, -1), 8),
+                    ("GRID", (0, 0), (-1, -1), 0.3, LIGHT),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [WHITE, colors.HexColor("#f0fdf4")]),
+                    ("TOPPADDING", (0, 0), (-1, -1), 4),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ]))
+                story.append(ft)
+            story.append(Spacer(1, 0.3*cm))
+
     # ---- CLINICAL NOTES ----
     notes = report_data.get("clinical_notes", "")
     if notes:
