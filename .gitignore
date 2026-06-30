@@ -17,9 +17,13 @@ build/
 
 # Data / uploads
 data/uploads/
+uploads/
 *.faiss
 *.pkl
 *.joblib
+*.db
+*.sqlite
+*.sqlite3
 
 # Logs
 *.log
@@ -36,3 +40,8 @@ Thumbs.db
 
 # Secrets
 secrets.toml
+.streamlit/secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
